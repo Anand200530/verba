@@ -12,25 +12,35 @@
 
 ---
 
+## Tech Stack
+
+| Part | Technology |
+|------|------------|
+| Mobile | React Native (Expo) |
+| Backend | Supabase (BaaS - Free) |
+| Auth | Supabase Auth |
+| Database | Supabase PostgreSQL |
+| Storage | Supabase Storage (photos) |
+
+---
+
 ## MVP Plan
 
-### Phase 1: Backend (API + Database)
+### Phase 1: Supabase Setup
 
 | Status | Step | Description |
 |--------|------|-------------|
-| ⏳ | 1 | Setup Node.js/Express server |
-| ⏳ | 2 | PostgreSQL database setup |
-| ⏳ | 3 | User auth (signup/login) |
-| ⏳ | 4 | User profiles (story, quiz responses) |
-| ⏳ | 5 | Discovery/matching API |
-| ⏳ | 6 | Chat API (1 active at a time) |
-| ⏳ | 7 | Photo reveal logic (mutual consent) |
+| ⏳ | 1 | Create Supabase account |
+| ⏳ | 2 | Create new project |
+| ⏳ | 3 | Setup database tables |
+| ⏳ | 4 | Configure auth |
+| ⏳ | 5 | Setup storage for photos |
 
 ### Phase 2: Mobile App
 
 | Status | Step | Description |
 |--------|------|-------------|
-| ⏳ | 1 | Connect screens to backend |
+| ⏳ | 1 | Connect to Supabase |
 | ⏳ | 2 | Quiz flow |
 | ⏳ | 3 | Profile creation |
 | ⏳ | 4 | Discover screen (no photos) |
@@ -53,11 +63,13 @@
 - Created GitHub repo: https://github.com/Anand200530/verba
 - Initial commit with mobile app skeleton (8 screens)
 - Project plan documented
+- Decided on Supabase for backend (free tier)
 
 ---
 
 ## Notes
 
+- Using Supabase (BaaS) instead of custom backend — free and no server management
 - 
 
 ---
