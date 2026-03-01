@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#0d0d0d"/>
+  
+  <!-- V in a box/curtain style -->
+  <rect x="30" y="30" width="140" height="140" rx="5" 
+        fill="none" 
+        stroke="#333" 
+        stroke-width="2"/>
+  
+  <!-- V letter -->
+  <path d="M50 160 L100 50 L150 160" 
+        fill="none" 
+        stroke="#e6e6e6" 
+        stroke-width="12" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Hidden/Reveal dots -->
+  <circle cx="70" cy="80" r="3" fill="#444"/>
+  <circle cx="130" cy="80" r="3" fill="#444"/>
+</svg>

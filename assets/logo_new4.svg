@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Simple thick V -->
+  <polygon points="100,30 40,170 70,170 100,80 130,170 160,170" 
+           fill="#fff"/>
+</svg>

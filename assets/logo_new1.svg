@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Simple text V -->
+  <text x="100" y="150" 
+        font-family="Arial, sans-serif" 
+        font-size="140" 
+        font-weight="bold" 
+        fill="#fff" 
+        text-anchor="middle">V</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background - transparent for use anywhere -->
+  
+  <!-- V letter - clean, bold -->
+  <path d="M30 50 L100 170 L170 50" 
+        fill="none" 
+        stroke="#0d0d0d" 
+        stroke-width="20" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Underline -->
+  <line x1="60" y1="185" x2="140" y2="185" 
+        stroke="#0d0d0d" 
+        stroke-width="8" 
+        stroke-linecap="round"/>
+</svg>

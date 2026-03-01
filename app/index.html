@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERBA — Words before looks</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f5f5;
+            --text: #444;
+            --black: #111;
+            --gray: #999;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .container {
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tagline {
+            font-size: 11px;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+            color: #aaa;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            margin-bottom: 50px;
+        }
+
+        .step {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .step-num {
+            font-size: 10px;
+            color: #ccc;
+            min-width: 24px;
+        }
+
+        .step-text {
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .step-text .highlight {
+            color: var(--black);
+        }
+
+        .form {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 14px 16px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--black);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #ccc;
+        }
+
+        button {
+            background: var(--black);
+            color: var(--bg);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-family: inherit;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .success {
+            display: none;
+            color: #4a5;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 10px;
+            color: #ccc;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                <path d="M40 50 L100 170 L160 50" 
+                      fill="none" 
+                      stroke="#111" 
+                      stroke-width="16" 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <div class="tagline">words before looks</div>
+
+        <div class="steps">
+            <div class="step">
+                <span class="step-num">01</span>
+                <span class="step-text">create your profile with a <span class="highlight">story</span></span>
+            </div>
+            <div class="step">
+                <span class="step-num">02</span>
+                <span class="step-text">match and <span class="highlight">chat</span> without seeing photos</span>
+            </div>
+            <div class="step">
+                <span class="step-num">03</span>
+                <span class="step-text">reveal photos only when <span class="highlight">both agree</span></span>
+            </div>
+        </div>
+
+        <form class="form" onsubmit="submitForm(event)">
+            <input type="email" placeholder="your email" required>
+            <button type="submit">JOIN</button>
+        </form>
+
+        <p class="success" id="success">you're on the list.</p>
+
+        <p class="footer">MADE FOR INTROVERTS</p>
+    </div>
+
+    <script>
+        function submitForm(e) {
+            e.preventDefault();
+            var email = e.target.querySelector('input').value;
+            
+            var waitlist = JSON.parse(localStorage.getItem('verba_waitlist') || '[]');
+            if (waitlist.indexOf(email) === -1) {
+                waitlist.push(email);
+                localStorage.setItem('verba_waitlist', JSON.stringify(waitlist));
+            }
+            
+            document.getElementById('success').style.display = 'block';
+            e.target.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background -->
+  <rect width="200" height="200" fill="#0d0d0d"/>
+  
+  <!-- Simple V with curve -->
+  <path d="M30 170 Q100 -10 170 170" 
+        fill="none" 
+        stroke="#e6e6e6" 
+        stroke-width="10" 
+        stroke-linecap="round"/>
+  
+  <!-- Dot for cursor -->
+  <circle cx="100" cy="60" r="6" fill="#666"/>
+</svg>
