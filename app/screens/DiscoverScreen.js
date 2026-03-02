@@ -98,7 +98,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <Text style={styles.passIcon}>X</Text>
+                <Text style={styles.passIcon}>x</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 20 },
   passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
-  passIcon: { fontSize: 24, color: '#999', fontWeight: 'bold' },
+  passIcon: { fontSize: 24, color: '#ccc', fontWeight: '300' },
   likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
   likeIcon: { fontSize: 32, color: '#fff' },
   queueInfo: { alignItems: 'center', marginTop: 20 },
