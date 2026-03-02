@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
@@ -38,6 +38,11 @@ export default function QuizScreen({ userData, onComplete, onBack }) {
 
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
 
+  const onScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } }],
+    { useNativeDriver: true }
+  )
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -50,7 +55,14 @@ export default function QuizScreen({ userData, onComplete, onBack }) {
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
       </View>
       
-      <Animated.ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} scrollEventThrottle={16} onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } }], { useNativeDriver: true })} style={styles.questionScroll}>
+      <Animated.ScrollView 
+        horizontal 
+        pagingEnabled 
+        showsHorizontalScrollIndicator={false} 
+        scrollEventThrottle={16} 
+        onScroll={onScroll} 
+        style={styles.questionScroll}
+      >
         {quizQuestions.map((q, index) => (
           <View key={q.id} style={styles.questionSlide}>
             <Text style={styles.questionNumber}>{index + 1} / {quizQuestions.length}</Text>
