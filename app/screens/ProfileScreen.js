@@ -55,8 +55,11 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
     }
   }
 
-  const handleSkipPrompt = () => {
-    handleNextPrompt()
+  const handleSkipAll = () => {
+    // Skip all prompts - go directly to finish
+    const writingStyle = analyzeWritingStyle(bio)
+    const profileData = { bio, interests: selectedInterests, writingStyle, promptAnswers: {} }
+    onComplete(profileData)
   }
 
   const handleFinish = () => {
@@ -75,6 +78,7 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
   if (screen === 'prompts') {
     const currentPrompt = writingPrompts[currentPromptIndex]
     const currentAnswer = promptAnswers[currentPromptIndex] || ''
+    const isLastPrompt = currentPromptIndex === writingPrompts.length - 1
 
     return (
       <View style={styles.container}>
@@ -98,19 +102,22 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
               textAlignVertical="top" 
             />
           </View>
+          
           <View style={styles.promptActions}>
-            <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
-              <Text style={styles.skipBtnText}>Skip</Text>
+            <TouchableOpacity style={styles.skipBtn} onPress={handleSkipAll}>
+              <Text style={styles.skipBtnText}>Skip All</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.nextPromptBtn} onPress={handleNextPrompt}>
-              <Text style={styles.nextPromptBtnText}>Next</Text>
-            </TouchableOpacity>
+            
+            {isLastPrompt ? (
+              <TouchableOpacity style={styles.finishBtn} onPress={handleFinish}>
+                <Text style={styles.finishBtnText}>Finish</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.nextPromptBtn} onPress={handleNextPrompt}>
+                <Text style={styles.nextPromptBtnText}>Next</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          {currentPromptIndex === writingPrompts.length - 1 && (
-            <TouchableOpacity style={styles.finishBtn} onPress={handleFinish}>
-              <Text style={styles.finishBtnText}>Finish</Text>
-            </TouchableOpacity>
-          )}
         </ScrollView>
       </View>
     )
@@ -187,11 +194,11 @@ const styles = StyleSheet.create({
   promptNumber: { fontFamily: 'Space Mono', fontSize: 12, color: '#999', letterSpacing: 2, marginBottom: 12 },
   promptText: { fontFamily: 'Cormorant Garamond', fontSize: 22, fontStyle: 'italic', color: '#1a1a1a', marginBottom: 16, lineHeight: 30 },
   promptInput: { backgroundColor: '#faf9f7', borderRadius: 10, padding: 16, fontFamily: 'Cormorant Garamond', fontSize: 16, fontStyle: 'italic', color: '#1a1a1a', height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: '#eee' },
-  promptActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  promptActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   skipBtn: { padding: 10 },
   skipBtnText: { fontFamily: 'Space Mono', fontSize: 12, color: '#999' },
   nextPromptBtn: { backgroundColor: '#1a1a1a', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 24 },
   nextPromptBtnText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 2, color: '#fff', fontWeight: 'bold' },
-  finishBtn: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center' },
-  finishBtnText: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
+  finishBtn: { backgroundColor: '#1a1a1a', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 24 },
+  finishBtnText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 2, color: '#fff', fontWeight: 'bold' },
 })
