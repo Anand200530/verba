@@ -7,6 +7,7 @@ import OnboardingScreen from './screens/OnboardingScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import QuizScreen from './screens/QuizScreen'
 import DiscoverScreen from './screens/DiscoverScreen'
+import MatchScreen from './screens/MatchScreen'
 import ChatScreen from './screens/ChatScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
@@ -27,6 +28,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [userData, setUserData] = useState(null)
   const [settings, setSettings] = useState({ ghostMode: true })
+  const [matchedProfile, setMatchedProfile] = useState(null)
 
   useEffect(() => {
     checkExistingUser()
@@ -53,7 +55,6 @@ export default function App() {
   }
 
   const handleOnboardingComplete = async (onboardingData) => {
-    // Save basic info and move to profile (story)
     const fullData = {
       name: onboardingData.name,
       age: onboardingData.age,
@@ -83,6 +84,25 @@ export default function App() {
     setCurrentScreen('discover')
   }
 
+  const handleMatch = (profile) => {
+    const matchData = {
+      ...profile,
+      sharedInterests: profile.interests ? profile.interests.slice(0, 2) : [],
+      compatibility: Math.floor(70 + Math.random() * 30),
+    }
+    setMatchedProfile(matchData)
+    setCurrentScreen('match')
+  }
+
+  const handleSendMessage = () => {
+    setCurrentScreen('chat')
+  }
+
+  const handleKeepSwiping = () => {
+    setMatchedProfile(null)
+    setCurrentScreen('discover')
+  }
+
   const handleSettingsChange = async (newSettings) => {
     setSettings(newSettings)
     await saveSettings(newSettings)
@@ -102,7 +122,6 @@ export default function App() {
     )
   }
 
-  // Navigation
   switch (currentScreen) {
     case 'splash':
       return <SplashScreen onFinish={() => setCurrentScreen('onboarding')} />
@@ -111,27 +130,26 @@ export default function App() {
       return <OnboardingScreen onComplete={handleOnboardingComplete} />
     
     case 'profile':
-      return (
-        <ProfileScreen 
-          userData={userData}
-          onComplete={handleProfileComplete}
-        />
-      )
+      return <ProfileScreen userData={userData} onComplete={handleProfileComplete} />
     
     case 'quiz':
-      return (
-        <QuizScreen 
-          userData={userData}
-          onComplete={handleQuizComplete} 
-        />
-      )
+      return <QuizScreen userData={userData} onComplete={handleQuizComplete} />
     
     case 'discover':
       return (
         <DiscoverScreen
           userData={userData}
-          onOpenChat={(match) => setCurrentScreen('chat')}
+          onMatch={handleMatch}
           onOpenSettings={() => setCurrentScreen('settings')}
+        />
+      )
+    
+    case 'match':
+      return (
+        <MatchScreen
+          matchData={matchedProfile}
+          onSendMessage={handleSendMessage}
+          onKeepSwiping={handleKeepSwiping}
         />
       )
     

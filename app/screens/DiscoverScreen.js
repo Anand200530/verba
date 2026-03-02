@@ -32,7 +32,7 @@ const demoProfiles = [
   }
 ]
 
-export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings }) {
+export default function DiscoverScreen({ userData, onMatch, onOpenSettings }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const currentProfile = demoProfiles[currentIndex]
 
@@ -46,7 +46,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
   }
 
   const handleLike = () => {
-    onOpenChat({ id: currentProfile.id, name: currentProfile.name })
+    onMatch(currentProfile)
   }
 
   const handlePass = () => {
