@@ -32,26 +32,45 @@ const demoProfiles = [
   }
 ]
 
-const HeartIcon = ({ size = 28, color = '#fff' }) => (
+// Clean Heart Icon - simple two-circle + triangle approach
+const HeartIcon = ({ size = 24, color = '#fff' }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{
-      width: size / 2,
-      height: size * 0.45,
-      backgroundColor: color,
-      borderRadius: size / 10,
-      position: 'absolute',
-      left: 2,
-      transform: [{ rotate: '-45deg' }],
-    }} />
-    <View style={{
-      width: size / 2,
-      height: size * 0.45,
-      backgroundColor: color,
-      borderRadius: size / 10,
-      position: 'absolute',
-      right: 2,
-      transform: [{ rotate: '45deg' }],
-    }} />
+    <View style={{ position: 'relative', width: size, height: size }}>
+      {/* Left circle */}
+      <View style={{
+        position: 'absolute',
+        width: size / 2,
+        height: size / 2,
+        backgroundColor: color,
+        borderRadius: size / 4,
+        left: 0,
+        top: size / 8,
+      }} />
+      {/* Right circle */}
+      <View style={{
+        position: 'absolute',
+        width: size / 2,
+        height: size / 2,
+        backgroundColor: color,
+        borderRadius: size / 4,
+        right: 0,
+        top: size / 8,
+      }} />
+      {/* Bottom triangle */}
+      <View style={{
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderLeftWidth: size / 4,
+        borderRightWidth: size / 4,
+        borderBottomWidth: size / 3,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: color,
+        bottom: 0,
+        left: size / 4,
+      }} />
+    </View>
   </View>
 )
 
