@@ -32,13 +32,26 @@ const demoProfiles = [
   }
 ]
 
-const HeartIcon = ({ size = 30, color = '#fff' }) => (
+const HeartIcon = ({ size = 28, color = '#fff' }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{ width: size, height: size, position: 'relative' }}>
-      <View style={{ position: 'absolute', width: size / 2, height: size / 2, backgroundColor: color, borderRadius: size / 4, left: 0, bottom: size / 4 }} />
-      <View style={{ position: 'absolute', width: size / 2, height: size / 2, backgroundColor: color, borderRadius: size / 4, right: 0, bottom: size / 4 }} />
-      <View style={{ position: 'absolute', width: 0, height: 0, borderLeftWidth: size / 4, borderRightWidth: size / 4, borderBottomWidth: size / 3, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: color, bottom: 0, left: size / 4 }} />
-    </View>
+    <View style={{
+      width: size / 2,
+      height: size * 0.45,
+      backgroundColor: color,
+      borderRadius: size / 10,
+      position: 'absolute',
+      left: 2,
+      transform: [{ rotate: '-45deg' }],
+    }} />
+    <View style={{
+      width: size / 2,
+      height: size * 0.45,
+      backgroundColor: color,
+      borderRadius: size / 10,
+      position: 'absolute',
+      right: 2,
+      transform: [{ rotate: '45deg' }],
+    }} />
   </View>
 )
 
@@ -126,7 +139,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <HeartIcon size={32} color="#fff" />
+                <HeartIcon size={28} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
