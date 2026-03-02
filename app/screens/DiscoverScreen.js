@@ -32,78 +32,26 @@ const demoProfiles = [
   }
 ]
 
-// Clean Heart Icon
 const HeartIcon = ({ size = 28, color = '#fff' }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{
-      width: size * 0.9,
-      height: size * 0.8,
-      position: 'relative',
-    }}>
-      <View style={{
-        position: 'absolute',
-        width: size * 0.5,
-        height: size * 0.5,
-        backgroundColor: color,
-        borderRadius: size * 0.25,
-        top: 0,
-        left: size * 0.1,
-        transform: [{ rotate: '-45deg' }],
-      }} />
-      <View style={{
-        position: 'absolute',
-        width: size * 0.5,
-        height: size * 0.5,
-        backgroundColor: color,
-        borderRadius: size * 0.25,
-        top: size * 0.2,
-        right: size * 0.1,
-        transform: [{ rotate: '45deg' }],
-      }} />
+    <View style={{ width: size * 0.9, height: size * 0.8, position: 'relative' }}>
+      <View style={{ position: 'absolute', width: size * 0.5, height: size * 0.5, backgroundColor: color, borderRadius: size * 0.25, top: 0, left: size * 0.1, transform: [{ rotate: '-45deg' }] }} />
+      <View style={{ position: 'absolute', width: size * 0.5, height: size * 0.5, backgroundColor: color, borderRadius: size * 0.25, top: size * 0.2, right: size * 0.1, transform: [{ rotate: '45deg' }] }} />
     </View>
   </View>
 )
 
-// Clean X Icon  
 const XIcon = ({ size = 24 }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{
-      width: size * 0.8,
-      height: 3,
-      backgroundColor: '#999',
-      borderRadius: 2,
-      transform: [{ rotate: '45deg' }],
-      position: 'absolute',
-    }} />
-    <View style={{
-      width: size * 0.8,
-      height: 3,
-      backgroundColor: '#999',
-      borderRadius: 2,
-      transform: [{ rotate: '-45deg' }],
-      position: 'absolute',
-    }} />
+    <View style={{ width: size * 0.8, height: 3, backgroundColor: '#999', borderRadius: 2, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
+    <View style={{ width: size * 0.8, height: 3, backgroundColor: '#999', borderRadius: 2, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
   </View>
 )
 
-// Clean Gear Icon
 const GearIcon = ({ size = 18 }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{
-      width: size * 0.5,
-      height: size * 0.5,
-      borderRadius: size * 0.25,
-      borderWidth: 2.5,
-      borderColor: '#888',
-      backgroundColor: '#f0f0f0',
-    }} />
-    <View style={{
-      width: size * 0.18,
-      height: size * 0.18,
-      borderRadius: size * 0.09,
-      backgroundColor: '#888',
-      position: 'absolute',
-    }} />
+    <View style={{ width: size * 0.5, height: size * 0.5, borderRadius: size * 0.25, borderWidth: 2.5, borderColor: '#888', backgroundColor: '#f0f0f0' }} />
+    <View style={{ width: size * 0.18, height: size * 0.18, borderRadius: size * 0.09, backgroundColor: '#888', position: 'absolute' }} />
   </View>
 )
 
@@ -140,8 +88,6 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
             <View style={styles.placeholderIcon}>
               <Text style={styles.placeholderText}>V</Text>
             </View>
-            <Text style={styles.photoText}>Photos Hidden</Text>
-            <Text style={styles.photoSubtext}>Reveal when both agree</Text>
           </View>
 
           <View style={styles.cardContent}>
@@ -219,11 +165,9 @@ const styles = StyleSheet.create({
   logo: { fontFamily: 'Space Mono', fontSize: 20, fontWeight: 'bold', letterSpacing: 2 },
   content: { padding: 16, paddingBottom: 100 },
   card: { backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 20 },
-  photoPlaceholder: { height: 280, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  placeholderIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#333', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  placeholderText: { fontFamily: 'Space Mono', fontSize: 24, color: '#fff', fontWeight: 'bold' },
-  photoText: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
-  photoSubtext: { fontFamily: 'Space Mono', fontSize: 10, color: '#666', marginTop: 4 },
+  photoPlaceholder: { height: 200, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
+  placeholderIcon: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#333', justifyContent: 'center', alignItems: 'center' },
+  placeholderText: { fontFamily: 'Space Mono', fontSize: 20, color: '#fff', fontWeight: 'bold' },
   cardContent: { padding: 24 },
   nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   name: { fontSize: 26, fontWeight: '600' },
