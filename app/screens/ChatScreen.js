@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
-import { sendMessage, getMessages, getProfile } from '../lib/supabase'
+
+const icebreakers = [
+  "What's your favorite book?",
+  "Coffee or tea?",
+  "Ideal weekend?",
+  "Last thing that made you laugh?"
+]
+
+const demoMessages = [
+  { id: '1', content: "Hey! I loved your story about the mountains. Very evocative.", sender: 'them', created_at: new Date(Date.now() - 3600000) },
+  { id: '2', content: "Thanks! Your writing has a really gentle quality to it.", sender: 'me', created_at: new Date(Date.now() - 1800000) },
+  { id: '3', content: "I've always been drawn to places with meaning. You?", sender: 'them', created_at: new Date(Date.now() - 900000) },
+]
 
 export default function ChatScreen({ match, profile, onBack }) {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(demoMessages)
   const [newMessage, setNewMessage] = useState('')
-  const [loading, setLoading] = useState(false)
 
-  // Demo messages for now
-  const demoMessages = [
-    { id: '1', content: 'Hey! I loved your story about growing up in the mountains.', sender: 'them', created_at: new Date(Date.now() - 3600000) },
-    { id: '2', content: 'Thanks! Your poem was beautiful too. When did you start writing?', sender: 'me', created_at: new Date(Date.now() - 1800000) },
-    { id: '3', content: 'Been writing since I was a teenager. It helps me process things.', sender: 'them', created_at: new Date(Date.now() - 900000) },
-  ]
-
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!newMessage.trim()) return
     
     const msg = {
@@ -35,23 +39,27 @@ export default function ChatScreen({ match, profile, onBack }) {
     >
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack}>
-          <Text style={styles.backButton}>←</Text>
+          <Text style={styles.back}>←</Text>
         </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerName}>Chat</Text>
-          <Text style={styles.headerStatus}>Photos hidden • Ghost mode on</Text>
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>Sarah, 28</Text>
+          <Text style={styles.userStatus}>Ghost mode on • Photos hidden</Text>
         </View>
-        <View style={styles.headerRight}>
-          <Text style={styles.revealButton}>🎭</Text>
-        </View>
+        <TouchableOpacity>
+          <Text style={styles.reveal}>REVEAL</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.photoReminder}>
-        <Text>📸 Photos are hidden. Reveal when both agree!</Text>
+      <View style={styles.icebreakers}>
+        {icebreakers.map((ice, i) => (
+          <TouchableOpacity key={i} style={styles.icebreaker}>
+            <Text style={styles.icebreakerText}>{ice}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <FlatList
-        data={[...demoMessages, ...messages]}
+        data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={[
@@ -87,69 +95,86 @@ export default function ChatScreen({ match, profile, onBack }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#faf9f7',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
     paddingTop: 50,
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#f0f0f0',
   },
-  backButton: {
-    fontSize: 28,
+  back: {
+    fontSize: 22,
     marginRight: 12,
   },
-  headerInfo: {
+  userInfo: {
     flex: 1,
   },
-  headerName: {
-    fontSize: 18,
+  userName: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  userStatus: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#999',
+  },
+  reveal: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
     fontWeight: 'bold',
   },
-  headerStatus: {
-    fontSize: 12,
-    color: '#666',
+  icebreakers: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 12,
+    backgroundColor: '#fff',
+    overflowX: 'auto',
   },
-  headerRight: {
-    padding: 8,
+  icebreaker: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
   },
-  revealButton: {
-    fontSize: 24,
-  },
-  photoReminder: {
-    backgroundColor: '#f0f0ff',
-    padding: 8,
-    alignItems: 'center',
+  icebreakerText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    whiteSpace: 'nowrap',
   },
   messageList: {
-    padding: 16,
+    padding: 20,
   },
   message: {
     maxWidth: '80%',
-    padding: 12,
+    padding: 14,
     borderRadius: 16,
     marginBottom: 12,
   },
   myMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#6B4EFF',
+    backgroundColor: '#1a1a1a',
   },
   theirMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#eee',
   },
   messageText: {
     fontSize: 16,
-    color: '#333',
+    lineHeight: 22,
+    color: '#1a1a1a',
   },
   inputContainer: {
     flexDirection: 'row',
     padding: 12,
+    backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#eee',
-    alignItems: 'flex-end',
   },
   input: {
     flex: 1,
@@ -157,14 +182,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    fontSize: 16,
+    fontSize: 14,
     maxHeight: 100,
   },
   sendButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#6B4EFF',
+    backgroundColor: '#1a1a1a',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,

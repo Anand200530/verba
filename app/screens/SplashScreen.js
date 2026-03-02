@@ -1,31 +1,29 @@
-// VERBA - Splash Screen
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen({ onFinish }) {
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Onboarding');
-    }, 2000);
-  }, []);
+    setTimeout(() => onFinish(), 2000)
+  }, [])
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>V</Text>
+      <Text style={styles.logo}>VERBA</Text>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#faf9f7',
   },
   logo: {
-    fontSize: 100,
+    fontFamily: 'Space Mono',
+    fontSize: 60,
     fontWeight: 'bold',
-    color: '#111',
+    color: '#1a1a1a',
   },
-});
+})

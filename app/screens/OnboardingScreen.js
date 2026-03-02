@@ -1,160 +1,215 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+
+const slides = [
+  { text: "What you say matters, not how you look" },
+  { text: "Words create connection" },
+  { text: "Let your story be heard" },
+]
 
 export default function OnboardingScreen({ onSignUp, onSignIn }) {
-  const [isLogin, setIsLogin] = useState(true)
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [isLogin, setIsLogin] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+
+  const nextSlide = () => {
+    if (slideIndex < slides.length) {
+      setSlideIndex(slideIndex + 1)
+    }
+  }
 
   const handleSubmit = async () => {
-    if (!email || !password) {
-      alert('Please fill in all fields')
-      return
+    if (!email || !password) return
+    if (isLogin) {
+      await onSignIn(email, password)
+    } else {
+      await onSignUp(email, password)
     }
-    
-    setLoading(true)
-    try {
-      if (isLogin) {
-        await onSignIn(email, password)
-      } else {
-        await onSignUp(email, password)
-      }
-    } catch (error) {
-      alert(error.message)
-    }
-    setLoading(false)
+  }
+
+  if (slideIndex < slides.length) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.logo}>VERBA</Text>
+        <Text style={styles.tag}>WORDS BEFORE LOOKS</Text>
+        
+        <View style={styles.slidesContainer}>
+          {slides.map((slide, i) => (
+            <Text 
+              key={i} 
+              style={[styles.slideText, i === slideIndex && styles.activeSlide]}
+            >
+              {slide.text}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.dots}>
+          {slides.map((_, i) => (
+            <View key={i} style={[styles.dot, i === slideIndex && styles.activeDot]} />
+          ))}
+        </View>
+
+        <TouchableOpacity style={styles.btn} onPress={nextSlide}>
+          <Text style={styles.btnText}>CONTINUE</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  if (isLogin) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.formContent}>
+        <Text style={styles.logo}>VERBA</Text>
+        <Text style={styles.tag}>WORDS BEFORE LOOKS</Text>
+
+        <View style={styles.form}>
+          <Text style={styles.formTitle}>{isLogin ? 'Welcome back' : 'Join Verba'}</Text>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholderTextColor="#999"
+          />
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="#999"
+          />
+
+          <TouchableOpacity style={styles.btn} onPress={handleSubmit}>
+            <Text style={styles.btnText}>{isLogin ? 'SIGN IN' : 'SIGN UP'}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.switchBtn} onPress={() => setIsLogin(false)}>
+            <Text style={styles.switchText}>
+              Don't have an account? Sign up
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    )
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>Verba</Text>
-        <Text style={styles.tagline}>Words before looks</Text>
-      </View>
+    <View style={styles.container}>
+      <Text style={styles.logo}>VERBA</Text>
+      <Text style={styles.tag}>WORDS BEFORE LOOKS</Text>
 
-      <View style={styles.featureList}>
-        <Text style={styles.feature}>🔒 Ghost Mode - No online status</Text>
-        <Text style={styles.feature}>🎭 Photos hidden until mutual consent</Text>
-        <Text style={styles.feature}>💬 One chat at a time</Text>
-        <Text style={styles.feature}>✍️ Your story matters</Text>
-      </View>
-
-      <View style={styles.form}>
-        <Text style={styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          placeholderTextColor="#999"
-        />
-        
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#999"
-        />
-
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.switchButton}
-          onPress={() => setIsLogin(!isLogin)}
-        >
-          <Text style={styles.switchText}>
-            {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      <TouchableOpacity style={styles.btn} onPress={() => setIsLogin(true)}>
+        <Text style={styles.btnText}>GET STARTED</Text>
+      </TouchableOpacity>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    padding: 24,
+    backgroundColor: '#faf9f7',
+    padding: 30,
     paddingTop: 60,
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
   logo: {
-    fontSize: 48,
+    fontFamily: 'Space Mono',
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#6B4EFF',
+    textAlign: 'center',
+    color: '#1a1a1a',
   },
-  tagline: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 8,
+  tag: {
+    fontFamily: 'Space Mono',
+    fontSize: 8,
+    letterSpacing: 4,
+    textAlign: 'center',
+    color: '#bbb',
+    marginBottom: 50,
   },
-  featureList: {
-    marginBottom: 32,
+  slidesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  feature: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 12,
-    paddingLeft: 8,
+  slideText: {
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 26,
+    textAlign: 'center',
+    lineHeight: 38,
+    color: '#1a1a1a',
+    fontStyle: 'italic',
+    display: 'none',
+  },
+  activeSlide: {
+    display: 'flex',
+  },
+  dots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    margin: 40,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#e0e0e0',
+  },
+  activeDot: {
+    backgroundColor: '#1a1a1a',
+  },
+  btn: {
+    backgroundColor: '#1a1a1a',
+    padding: 16,
+    borderRadius: 8,
+    width: '100%',
+  },
+  btnText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    letterSpacing: 3,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  formContent: {
+    padding: 30,
+    paddingTop: 60,
   },
   form: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 16,
-    padding: 24,
+    marginTop: 40,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
+  formTitle: {
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 26,
     textAlign: 'center',
+    marginBottom: 30,
+    fontStyle: 'italic',
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 12,
     padding: 16,
-    fontSize: 16,
+    borderRadius: 8,
+    fontFamily: 'Space Mono',
+    fontSize: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
   },
-  button: {
-    backgroundColor: '#6B4EFF',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  switchButton: {
+  switchBtn: {
     marginTop: 20,
     alignItems: 'center',
   },
   switchText: {
-    color: '#6B4EFF',
-    fontSize: 14,
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#1a1a1a',
   },
 })

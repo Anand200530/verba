@@ -5,51 +5,27 @@ const quizQuestions = [
   {
     id: 1,
     question: "How do you prefer to communicate?",
-    options: [
-      { text: "Written messages", value: "written" },
-      { text: "Voice notes", value: "voice" },
-      { text: "Video calls", value: "video" },
-      { text: "In person", value: "person" },
-    ]
+    options: ["Written messages", "Voice notes", "Video calls", "In person"]
   },
   {
     id: 2,
     question: "What's your ideal first date?",
-    options: [
-      { text: "Coffee shop chat", value: "coffee" },
-      { text: "Long walk", value: "walk" },
-      { text: "Activity together", value: "activity" },
-      { text: "Virtual movie", value: "virtual" },
-    ]
+    options: ["Coffee shop chat", "Long walk", "Activity together", "Virtual movie"]
   },
   {
     id: 3,
     question: "How do you feel about photos?",
-    options: [
-      { text: "I'd rather not share", value: "private" },
-      { text: "I'll share eventually", value: "gradual" },
-      { text: "No problem sharing", value: "open" },
-      { text: "Only if they do first", value: "mutual" },
-    ]
+    options: ["I'd rather not share", "I'll share eventually", "No problem sharing", "Only if they do first"]
   },
   {
     id: 4,
     question: "How many conversations at once?",
-    options: [
-      { text: "One at a time - quality over quantity", value: "one" },
-      { text: "A few is fine", value: "few" },
-      { text: "Keep it open", value: "open" },
-    ]
+    options: ["One at a time", "A few is fine", "Keep it open"]
   },
   {
     id: 5,
     question: "What matters most in a match?",
-    options: [
-      { text: "Their words/story", value: "words" },
-      { text: "Their interests", value: "interests" },
-      { text: "Their values", value: "values" },
-      { text: "The conversation flow", value: "flow" },
-    ]
+    options: ["Their words/story", "Their interests", "Their values", "The conversation flow"]
   },
 ]
 
@@ -57,14 +33,13 @@ export default function QuizScreen({ onComplete }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
 
-  const handleAnswer = (value) => {
-    const newAnswers = { ...answers, [currentQuestion]: value }
+  const handleAnswer = (option) => {
+    const newAnswers = { ...answers, [currentQuestion]: option }
     setAnswers(newAnswers)
 
     if (currentQuestion < quizQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
-      // Quiz complete
       onComplete(newAnswers)
     }
   }
@@ -79,7 +54,7 @@ export default function QuizScreen({ onComplete }) {
       
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.questionNumber}>
-          Question {currentQuestion + 1} of {quizQuestions.length}
+          {currentQuestion + 1} / {quizQuestions.length}
         </Text>
         
         <Text style={styles.question}>
@@ -91,9 +66,9 @@ export default function QuizScreen({ onComplete }) {
             <TouchableOpacity
               key={index}
               style={styles.optionButton}
-              onPress={() => handleAnswer(option.value)}
+              onPress={() => handleAnswer(option)}
             >
-              <Text style={styles.optionText}>{option.text}</Text>
+              <Text style={styles.optionText}>{option}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -105,44 +80,49 @@ export default function QuizScreen({ onComplete }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#faf9f7',
   },
   progressContainer: {
-    height: 4,
+    height: 3,
     backgroundColor: '#eee',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#6B4EFF',
+    backgroundColor: '#1a1a1a',
   },
   content: {
-    padding: 24,
-    paddingTop: 40,
+    padding: 30,
+    paddingTop: 50,
   },
   questionNumber: {
-    fontSize: 14,
+    fontFamily: 'Space Mono',
+    fontSize: 10,
     color: '#999',
+    letterSpacing: 2,
     marginBottom: 8,
   },
   question: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 32,
-    color: '#333',
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 26,
+    fontStyle: 'italic',
+    marginBottom: 40,
+    color: '#1a1a1a',
+    lineHeight: 36,
   },
   options: {
     gap: 12,
   },
   optionButton: {
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#eee',
   },
   optionText: {
-    fontSize: 16,
-    color: '#333',
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 18,
     textAlign: 'center',
+    color: '#1a1a1a',
   },
 })

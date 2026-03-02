@@ -4,23 +4,29 @@ import { discoverProfiles, createMatch, getProfile } from '../lib/supabase'
 
 export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettings }) {
   const [profiles, setProfiles] = useState([])
-  const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
-  const loadProfiles = async () => {
-    if (!user) return
-    
-    const { data, error } = await discoverProfiles(user.id)
-    if (!error) {
-      setProfiles(data)
+  // Demo profiles for testing
+  const demoProfiles = [
+    {
+      id: '1',
+      display_name: 'Sarah',
+      age: 28,
+      bio: "I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover. Always curious about people's stories.",
+      interests: ['books', 'coffee', 'writing']
+    },
+    {
+      id: '2',
+      display_name: 'James',
+      age: 31,
+      bio: "Writer by night, architect by day. Looking for someone who understands the beauty in quiet moments and long walks without a destination.",
+      interests: ['writing', 'architecture', 'walking']
     }
-    setLoading(false)
+  ]
+
+  const loadProfiles = async () => {
     setRefreshing(false)
   }
-
-  useEffect(() => {
-    loadProfiles()
-  }, [user])
 
   const onRefresh = () => {
     setRefreshing(true)
@@ -28,55 +34,19 @@ export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettin
   }
 
   const handleLike = async (likedProfile) => {
-    // In a real app, this would check if the other person also liked
-    // For now, we'll create a match
-    const { data: ownProfile } = await getProfile(user.id)
-    
-    if (ownProfile) {
-      // Simulate matching (in real app, this would be bidirectional)
-      const { data: existingMatch } = await createMatch(ownProfile.id, likedProfile.id)
-      
-      if (existingMatch && existingMatch.length > 0) {
-        onOpenChat(existingMatch[0])
-      } else {
-        // Remove from list and show "no match" for now
-        setProfiles(profiles.filter(p => p.id !== likedProfile.id))
-        alert(`You liked ${likedProfile.display_name}! They'll be notified.`)
-      }
-    }
+    onOpenChat({ id: 'demo-match' })
   }
 
-  const handlePass = (likedProfile) => {
-    setProfiles(profiles.filter(p => p.id !== likedProfile.id))
+  const handlePass = () => {
+    // Just move to next (in demo, cycle back)
   }
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    )
-  }
-
-  if (profiles.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.emptyTitle}>No more profiles</Text>
-        <Text style={styles.emptySubtitle}>Check back later for new matches!</Text>
-        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
-          <Text style={styles.refreshText}>Refresh</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+  const currentProfile = demoProfiles[0] || profiles[0]
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>Verba</Text>
-        <TouchableOpacity onPress={onOpenSettings}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
+        <Text style={styles.logo}>VERBA</Text>
       </View>
 
       <ScrollView
@@ -85,45 +55,61 @@ export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettin
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {profiles.slice(0, 1).map((p) => (
-          <View key={p.id} style={styles.card}>
+        {currentProfile ? (
+          <View style={styles.card}>
             <View style={styles.photoPlaceholder}>
               <Text style={styles.photoEmoji}>🎭</Text>
-              <Text style={styles.photoText}>Photos hidden</Text>
+              <Text style={styles.photoText}>Photos Hidden</Text>
               <Text style={styles.photoSubtext}>Reveal when both agree</Text>
             </View>
 
-            <View style={styles.info}>
-              <Text style={styles.name}>{p.display_name}, {p.age}</Text>
-              <Text style={styles.bio} numberOfLines={4}>
-                {p.bio || "No story yet..."}
-              </Text>
+            <View style={styles.cardContent}>
+              <Text style={styles.name}>{currentProfile.display_name}, {currentProfile.age}</Text>
+              
+              <View style={styles.prompt}>
+                <Text style={styles.promptLabel}>MY STORY</Text>
+                <Text style={styles.story}>{currentProfile.bio}</Text>
+              </View>
+
+              {currentProfile.interests && (
+                <View style={styles.tags}>
+                  {currentProfile.interests.map((tag, i) => (
+                    <View key={i} style={styles.tag}>
+                      <Text style={styles.tagText}>{tag}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
 
               <View style={styles.actions}>
-                <TouchableOpacity 
-                  style={styles.passButton}
-                  onPress={() => handlePass(p)}
-                >
+                <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
                   <Text style={styles.passIcon}>✌️</Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity 
-                  style={styles.likeButton}
-                  onPress={() => handleLike(p)}
-                >
-                  <Text style={styles.likeIcon}>💜</Text>
+                <TouchableOpacity style={styles.likeBtn} onPress={() => handleLike(currentProfile)}>
+                  <Text style={styles.likeIcon}>♥</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-        ))}
-
-        {profiles.length > 1 && (
-          <Text style={styles.moreText}>
-            +{profiles.length - 1} more profiles in queue
-          </Text>
+        ) : (
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>No more profiles</Text>
+            <Text style={styles.emptySubtext}>Check back later!</Text>
+          </View>
         )}
       </ScrollView>
+
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navIcon}>🔥</Text>
+          <Text style={styles.navLabel}>Discover</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
+          <Text style={styles.navIcon}>⚙️</Text>
+          <Text style={styles.navLabel}>Settings</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -131,121 +117,170 @@ export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettin
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#faf9f7',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
+    padding: 20,
     paddingTop: 50,
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   logo: {
-    fontSize: 28,
+    fontFamily: 'Space Mono',
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#6B4EFF',
-  },
-  settingsIcon: {
-    fontSize: 24,
   },
   content: {
     padding: 16,
+    paddingBottom: 100,
   },
   card: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 20,
+    backgroundColor: '#fff',
+    borderRadius: 16,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
   },
   photoPlaceholder: {
-    height: 300,
-    backgroundColor: '#6B4EFF',
+    height: 280,
+    backgroundColor: '#1a1a1a',
     justifyContent: 'center',
     alignItems: 'center',
   },
   photoEmoji: {
-    fontSize: 64,
-    marginBottom: 12,
+    fontSize: 48,
+    marginBottom: 8,
   },
   photoText: {
-    fontSize: 20,
+    fontFamily: 'Space Mono',
+    fontSize: 14,
     color: '#fff',
     fontWeight: 'bold',
   },
   photoSubtext: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#666',
     marginTop: 4,
   },
-  info: {
-    padding: 20,
+  cardContent: {
+    padding: 24,
   },
   name: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  prompt: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  promptLabel: {
+    fontFamily: 'Space Mono',
+    fontSize: 9,
+    letterSpacing: 1,
+    color: '#999',
     marginBottom: 8,
   },
-  bio: {
+  story: {
+    fontFamily: 'Cormorant Garamond',
     fontSize: 16,
-    color: '#666',
-    lineHeight: 24,
+    fontStyle: 'italic',
+    lineHeight: 26,
+    color: '#444',
+  },
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
     marginBottom: 20,
+  },
+  tag: {
+    backgroundColor: '#1a1a1a',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+  },
+  tagText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#fff',
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: 24,
+    paddingTop: 8,
   },
-  passButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  passBtn: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#eee',
+    borderColor: '#e0e0e0',
   },
   passIcon: {
     fontSize: 28,
   },
-  likeButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#6B4EFF',
+  likeBtn: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#1a1a1a',
     justifyContent: 'center',
     alignItems: 'center',
   },
   likeIcon: {
     fontSize: 28,
+    color: '#fff',
   },
-  moreText: {
-    textAlign: 'center',
-    color: '#999',
-    marginTop: 16,
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
   },
-  emptyTitle: {
+  emptyText: {
+    fontFamily: 'Cormorant Garamond',
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 100,
+    fontStyle: 'italic',
+    color: '#999',
   },
-  emptySubtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+  emptySubtext: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#bbb',
     marginTop: 8,
   },
-  refreshButton: {
-    marginTop: 20,
-    alignSelf: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#6B4EFF',
-    borderRadius: 20,
+  bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
   },
-  refreshText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  navItem: {
+    alignItems: 'center',
+  },
+  navIcon: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  navLabel: {
+    fontFamily: 'Space Mono',
+    fontSize: 9,
+    color: '#bbb',
   },
 })

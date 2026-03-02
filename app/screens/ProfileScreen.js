@@ -28,8 +28,8 @@ export default function ProfileScreen({ user, onComplete }) {
         displayName,
         parseInt(age),
         bio,
-        {}, // quiz responses - we'll add later
-        []  // interests - we'll add later
+        {},
+        []
       )
 
       if (error) {
@@ -45,11 +45,11 @@ export default function ProfileScreen({ user, onComplete }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Create Your Profile</Text>
-      <Text style={styles.subtitle}>This is your chance to shine with words</Text>
+      <Text style={styles.title}>Your Story</Text>
+      <Text style={styles.subtitle}>Let words introduce you</Text>
 
       <View style={styles.form}>
-        <Text style={styles.label}>Username *</Text>
+        <Text style={styles.label}>USERNAME</Text>
         <TextInput
           style={styles.input}
           placeholder="Choose a username"
@@ -59,7 +59,7 @@ export default function ProfileScreen({ user, onComplete }) {
           placeholderTextColor="#999"
         />
 
-        <Text style={styles.label}>Display Name *</Text>
+        <Text style={styles.label}>DISPLAY NAME</Text>
         <TextInput
           style={styles.input}
           placeholder="What should we call you?"
@@ -68,7 +68,7 @@ export default function ProfileScreen({ user, onComplete }) {
           placeholderTextColor="#999"
         />
 
-        <Text style={styles.label}>Age *</Text>
+        <Text style={styles.label}>AGE</Text>
         <TextInput
           style={styles.input}
           placeholder="Your age"
@@ -79,10 +79,10 @@ export default function ProfileScreen({ user, onComplete }) {
           placeholderTextColor="#999"
         />
 
-        <Text style={styles.label}>Your Story *</Text>
+        <Text style={styles.label}>YOUR STORY</Text>
         <TextInput
           style={[styles.input, styles.bioInput]}
-          placeholder="Write something about yourself... Your story, thoughts, what makes you, you. No photos needed."
+          placeholder="Write something about yourself... Your story, your thoughts, what makes you unique. No photos needed - let your words speak."
           value={bio}
           onChangeText={setBio}
           multiline
@@ -90,15 +90,14 @@ export default function ProfileScreen({ user, onComplete }) {
           textAlignVertical="top"
           placeholderTextColor="#999"
         />
-        <Text style={styles.hint}>💡 This is what others will see. Make it count!</Text>
 
         <TouchableOpacity 
-          style={[styles.button, loading && styles.buttonDisabled]}
+          style={styles.button}
           onPress={handleComplete}
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? 'Creating...' : 'Complete Profile'}
+            {loading ? 'CREATING...' : 'CREATE PROFILE'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -109,63 +108,61 @@ export default function ProfileScreen({ user, onComplete }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#faf9f7',
   },
   content: {
-    padding: 24,
-    paddingTop: 40,
+    padding: 30,
+    paddingTop: 50,
   },
   title: {
-    fontSize: 28,
+    fontFamily: 'Space Mono',
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  form: {
-    gap: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
     marginBottom: 4,
   },
+  subtitle: {
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 18,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    color: '#666',
+    marginBottom: 30,
+  },
+  form: {
+    gap: 8,
+  },
+  label: {
+    fontFamily: 'Space Mono',
+    fontSize: 9,
+    letterSpacing: 1,
+    color: '#999',
+    marginBottom: 4,
+    marginTop: 12,
+  },
   input: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
     padding: 16,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#eee',
   },
   bioInput: {
     height: 150,
     textAlignVertical: 'top',
   },
-  hint: {
-    fontSize: 12,
-    color: '#999',
-    fontStyle: 'italic',
-  },
   button: {
-    backgroundColor: '#6B4EFF',
-    borderRadius: 12,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
     padding: 18,
     alignItems: 'center',
-    marginTop: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
+    marginTop: 24,
   },
   buttonText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    letterSpacing: 3,
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 })
