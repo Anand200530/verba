@@ -1,188 +1,251 @@
-// VERBA - Discover Screen (Browse Profiles)
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native'
+import { discoverProfiles, createMatch, getProfile } from '../lib/supabase'
 
-// Mock profiles (without photos)
-const profiles = [
-  {
-    id: 1,
-    name: 'Alex',
-    age: 26,
-    story: 'Coffee enthusiast. Love reading on rainy days. Looking for someone to explore bookstores with.',
-  },
-  {
-    id: 2,
-    name: 'Jordan',
-    age: 24,
-    story: 'Software developer by day, amateur chef by night. Would love to cook for someone special.',
-  },
-  {
-    id: 3,
-    name: 'Sam',
-    age: 28,
-    story: 'Introvert who loves hiking. Looking for genuine connection over small talk.',
-  },
-];
+export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettings }) {
+  const [profiles, setProfiles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
-export default function DiscoverScreen({ navigation }) {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-
-  const handlePass = () => {
-    if (currentIndex < profiles.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+  const loadProfiles = async () => {
+    if (!user) return
+    
+    const { data, error } = await discoverProfiles(user.id)
+    if (!error) {
+      setProfiles(data)
     }
-  };
+    setLoading(false)
+    setRefreshing(false)
+  }
 
-  const handleLike = () => {
-    // In real app: send like to backend
-    navigation.navigate('Match');
-  };
+  useEffect(() => {
+    loadProfiles()
+  }, [user])
 
-  const profile = profiles[currentIndex];
+  const onRefresh = () => {
+    setRefreshing(true)
+    loadProfiles()
+  }
 
-  if (!profile) {
+  const handleLike = async (likedProfile) => {
+    // In a real app, this would check if the other person also liked
+    // For now, we'll create a match
+    const { data: ownProfile } = await getProfile(user.id)
+    
+    if (ownProfile) {
+      // Simulate matching (in real app, this would be bidirectional)
+      const { data: existingMatch } = await createMatch(ownProfile.id, likedProfile.id)
+      
+      if (existingMatch && existingMatch.length > 0) {
+        onOpenChat(existingMatch[0])
+      } else {
+        // Remove from list and show "no match" for now
+        setProfiles(profiles.filter(p => p.id !== likedProfile.id))
+        alert(`You liked ${likedProfile.display_name}! They'll be notified.`)
+      }
+    }
+  }
+
+  const handlePass = (likedProfile) => {
+    setProfiles(profiles.filter(p => p.id !== likedProfile.id))
+  }
+
+  if (loading) {
     return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyText}>No more profiles</Text>
+      <View style={styles.container}>
+        <Text>Loading...</Text>
       </View>
-    );
+    )
+  }
+
+  if (profiles.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.emptyTitle}>No more profiles</Text>
+        <Text style={styles.emptySubtitle}>Check back later for new matches!</Text>
+        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+          <Text style={styles.refreshText}>Refresh</Text>
+        </TouchableOpacity>
+      </View>
+    )
   }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+        <Text style={styles.logo}>Verba</Text>
+        <TouchableOpacity onPress={onOpenSettings}>
           <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
-        <Text style={styles.logo}>V</Text>
-        <View style={{ width: 30 }} />
       </View>
 
-      {/* Profile Card */}
-      <View style={styles.card}>
-        {/* Photo placeholder - blurred/hidden */}
-        <View style={styles.photoPlaceholder}>
-          <Text style={styles.photoText}>Photo hidden</Text>
-          <Text style={styles.photoSubtext}>Chat first to reveal</Text>
-        </View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {profiles.slice(0, 1).map((p) => (
+          <View key={p.id} style={styles.card}>
+            <View style={styles.photoPlaceholder}>
+              <Text style={styles.photoEmoji}>🎭</Text>
+              <Text style={styles.photoText}>Photos hidden</Text>
+              <Text style={styles.photoSubtext}>Reveal when both agree</Text>
+            </View>
 
-        <View style={styles.info}>
-          <Text style={styles.name}>{profile.name}, {profile.age}</Text>
-          <Text style={styles.story}>{profile.story}</Text>
-        </View>
-      </View>
+            <View style={styles.info}>
+              <Text style={styles.name}>{p.display_name}, {p.age}</Text>
+              <Text style={styles.bio} numberOfLines={4}>
+                {p.bio || "No story yet..."}
+              </Text>
 
-      {/* Actions */}
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-          <Text style={styles.passText}>✕</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-          <Text style={styles.likeText}>♥</Text>
-        </TouchableOpacity>
-      </View>
+              <View style={styles.actions}>
+                <TouchableOpacity 
+                  style={styles.passButton}
+                  onPress={() => handlePass(p)}
+                >
+                  <Text style={styles.passIcon}>✌️</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.likeButton}
+                  onPress={() => handleLike(p)}
+                >
+                  <Text style={styles.likeIcon}>💜</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ))}
+
+        {profiles.length > 1 && (
+          <Text style={styles.moreText}>
+            +{profiles.length - 1} more profiles in queue
+          </Text>
+        )}
+      </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-  },
-  settingsIcon: {
-    fontSize: 24,
+    padding: 16,
+    paddingTop: 50,
   },
   logo: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#111',
+    color: '#6B4EFF',
+  },
+  settingsIcon: {
+    fontSize: 24,
+  },
+  content: {
+    padding: 16,
   },
   card: {
-    flex: 1,
-    margin: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f8f8',
     borderRadius: 20,
     overflow: 'hidden',
   },
   photoPlaceholder: {
-    height: 250,
-    backgroundColor: '#eee',
+    height: 300,
+    backgroundColor: '#6B4EFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  photoEmoji: {
+    fontSize: 64,
+    marginBottom: 12,
+  },
   photoText: {
-    fontSize: 18,
-    color: '#999',
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   photoSubtext: {
     fontSize: 14,
-    color: '#ccc',
-    marginTop: 8,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 4,
   },
   info: {
-    padding: 24,
+    padding: 20,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111',
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  story: {
+  bio: {
     fontSize: 16,
     color: '#666',
     lineHeight: 24,
+    marginBottom: 20,
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 40,
-    paddingBottom: 40,
+    gap: 20,
   },
-  passBtn: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+  passButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
     borderColor: '#eee',
   },
-  passText: {
-    fontSize: 30,
-    color: '#999',
+  passIcon: {
+    fontSize: 28,
   },
-  likeBtn: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#111',
+  likeButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#6B4EFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  likeText: {
-    fontSize: 30,
+  likeIcon: {
+    fontSize: 28,
+  },
+  moreText: {
+    textAlign: 'center',
+    color: '#999',
+    marginTop: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 100,
+  },
+  emptySubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  refreshButton: {
+    marginTop: 20,
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: '#6B4EFF',
+    borderRadius: 20,
+  },
+  refreshText: {
     color: '#fff',
+    fontWeight: 'bold',
   },
-  empty: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    color: '#999',
-  },
-});
+})

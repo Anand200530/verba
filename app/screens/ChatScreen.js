@@ -1,157 +1,176 @@
-// VERBA - Chat Screen
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
+import { sendMessage, getMessages, getProfile } from '../lib/supabase'
 
-// Mock messages
-const initialMessages = [
-  { id: 1, text: 'Hey! Nice to match with you', sender: 'them' },
-  { id: 2, text: 'Hi! Your story sounded really interesting', sender: 'them' },
-];
+export default function ChatScreen({ match, profile, onBack }) {
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
-export default function ChatScreen({ navigation }) {
-  const [messages, setMessages] = useState(initialMessages);
-  const [inputText, setInputText] = useState('');
+  // Demo messages for now
+  const demoMessages = [
+    { id: '1', content: 'Hey! I loved your story about growing up in the mountains.', sender: 'them', created_at: new Date(Date.now() - 3600000) },
+    { id: '2', content: 'Thanks! Your poem was beautiful too. When did you start writing?', sender: 'me', created_at: new Date(Date.now() - 1800000) },
+    { id: '3', content: 'Been writing since I was a teenager. It helps me process things.', sender: 'them', created_at: new Date(Date.now() - 900000) },
+  ]
 
-  const sendMessage = () => {
-    if (!inputText.trim()) return;
+  const handleSend = async () => {
+    if (!newMessage.trim()) return
     
-    setMessages([...messages, { id: Date.now(), text: inputText, sender: 'me' }]);
-    setInputText('');
-  };
-
-  const requestPhotoReveal = () => {
-    alert('Photo reveal request sent! They will see it when they agree.');
-  };
-
-  const renderMessage = ({ item }) => (
-    <View style={[styles.message, item.sender === 'me' && styles.myMessage]}>
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  );
+    const msg = {
+      id: Date.now().toString(),
+      content: newMessage,
+      sender: 'me',
+      created_at: new Date()
+    }
+    
+    setMessages([...messages, msg])
+    setNewMessage('')
+  }
 
   return (
     <KeyboardAvoidingView 
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.back}>←</Text>
+        <TouchableOpacity onPress={onBack}>
+          <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerName}>Alex</Text>
-          <Text style={styles.photoStatus}>Photos hidden</Text>
+          <Text style={styles.headerName}>Chat</Text>
+          <Text style={styles.headerStatus}>Photos hidden • Ghost mode on</Text>
         </View>
-        <TouchableOpacity onPress={requestPhotoReveal}>
-          <Text style={styles.revealBtn}>Reveal</Text>
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <Text style={styles.revealButton}>🎭</Text>
+        </View>
       </View>
 
-      {/* Messages */}
+      <View style={styles.photoReminder}>
+        <Text>📸 Photos are hidden. Reveal when both agree!</Text>
+      </View>
+
       <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.messagesList}
+        data={[...demoMessages, ...messages]}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={[
+            styles.message,
+            item.sender === 'me' ? styles.myMessage : styles.theirMessage
+          ]}>
+            <Text style={styles.messageText}>{item.content}</Text>
+          </View>
+        )}
+        contentContainerStyle={styles.messageList}
       />
 
-      {/* Input */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Type a message..."
-          value={inputText}
-          onChangeText={setInputText}
+          value={newMessage}
+          onChangeText={setNewMessage}
           multiline
+          placeholderTextColor="#999"
         />
-        <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
-          <Text style={styles.sendText}>Send</Text>
+        <TouchableOpacity 
+          style={styles.sendButton}
+          onPress={handleSend}
+        >
+          <Text style={styles.sendText}>→</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#fff',
+    padding: 16,
+    paddingTop: 50,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  back: {
-    fontSize: 24,
-    color: '#111',
+  backButton: {
+    fontSize: 28,
+    marginRight: 12,
   },
   headerInfo: {
     flex: 1,
-    marginLeft: 16,
   },
   headerName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111',
   },
-  photoStatus: {
+  headerStatus: {
     fontSize: 12,
-    color: '#999',
+    color: '#666',
   },
-  revealBtn: {
-    fontSize: 14,
-    color: '#111',
-    fontWeight: 'bold',
+  headerRight: {
+    padding: 8,
   },
-  messagesList: {
+  revealButton: {
+    fontSize: 24,
+  },
+  photoReminder: {
+    backgroundColor: '#f0f0ff',
+    padding: 8,
+    alignItems: 'center',
+  },
+  messageList: {
     padding: 16,
   },
   message: {
-    backgroundColor: '#fff',
-    padding: 16,
+    maxWidth: '80%',
+    padding: 12,
     borderRadius: 16,
     marginBottom: 12,
-    maxWidth: '80%',
   },
   myMessage: {
-    backgroundColor: '#111',
     alignSelf: 'flex-end',
+    backgroundColor: '#6B4EFF',
+  },
+  theirMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#f0f0f0',
   },
   messageText: {
     fontSize: 16,
-    color: '#111',
+    color: '#333',
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 16,
-    backgroundColor: '#fff',
+    padding: 12,
     borderTopWidth: 1,
     borderTopColor: '#eee',
+    alignItems: 'flex-end',
   },
   input: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     fontSize: 16,
-    marginRight: 12,
+    maxHeight: 100,
   },
-  sendBtn: {
-    backgroundColor: '#111',
-    borderRadius: 24,
-    paddingHorizontal: 20,
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#6B4EFF',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
   },
   sendText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontSize: 20,
   },
-});
+})

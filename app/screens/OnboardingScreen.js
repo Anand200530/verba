@@ -1,118 +1,160 @@
-// VERBA - Onboarding Screen
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 
-const { width } = Dimensions.get('window');
+export default function OnboardingScreen({ onSignUp, onSignIn }) {
+  const [isLogin, setIsLogin] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
-const slides = [
-  {
-    title: '01',
-    text: 'Create your profile with a story, not photos',
-  },
-  {
-    title: '02', 
-    text: 'Match and chat without seeing photos',
-  },
-  {
-    title: '03',
-    text: 'Reveal photos only when both agree',
-  },
-];
-
-export default function OnboardingScreen({ navigation }) {
-  const [currentSlide, setCurrentSlide] = React.useState(0);
-
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
-      navigation.replace('Quiz');
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      alert('Please fill in all fields')
+      return
     }
-  };
+    
+    setLoading(true)
+    try {
+      if (isLogin) {
+        await onSignIn(email, password)
+      } else {
+        await onSignUp(email, password)
+      }
+    } catch (error) {
+      alert(error.message)
+    }
+    setLoading(false)
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.logo}>V</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>Verba</Text>
+        <Text style={styles.tagline}>Words before looks</Text>
       </View>
 
-      <View style={styles.slideContainer}>
-        <Text style={styles.slideNumber}>{slides[currentSlide].title}</Text>
-        <Text style={styles.slideText}>{slides[currentSlide].text}</Text>
+      <View style={styles.featureList}>
+        <Text style={styles.feature}>🔒 Ghost Mode - No online status</Text>
+        <Text style={styles.feature}>🎭 Photos hidden until mutual consent</Text>
+        <Text style={styles.feature}>💬 One chat at a time</Text>
+        <Text style={styles.feature}>✍️ Your story matters</Text>
       </View>
 
-      <View style={styles.dots}>
-        {slides.map((_, index) => (
-          <View 
-            key={index} 
-            style={[styles.dot, index === currentSlide && styles.dotActive]} 
-          />
-        ))}
-      </View>
+      <View style={styles.form}>
+        <Text style={styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
+        
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholderTextColor="#999"
+        />
+        
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          placeholderTextColor="#999"
+        />
 
-      <TouchableOpacity style={styles.button} onPress={nextSlide}>
-        <Text style={styles.buttonText}>NEXT</Text>
-      </TouchableOpacity>
-    </View>
-  );
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.switchButton}
+          onPress={() => setIsLogin(!isLogin)}
+        >
+          <Text style={styles.switchText}>
+            {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 24,
+    backgroundColor: '#fff',
   },
-  logoContainer: {
+  content: {
+    padding: 24,
+    paddingTop: 60,
+  },
+  header: {
     alignItems: 'center',
-    marginTop: 60,
+    marginBottom: 32,
   },
   logo: {
-    fontSize: 60,
+    fontSize: 48,
     fontWeight: 'bold',
-    color: '#111',
+    color: '#6B4EFF',
   },
-  slideContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  tagline: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 8,
   },
-  slideNumber: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 20,
+  featureList: {
+    marginBottom: 32,
   },
-  slideText: {
+  feature: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 12,
+    paddingLeft: 8,
+  },
+  form: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 16,
+    padding: 24,
+  },
+  title: {
     fontSize: 24,
-    color: '#111',
+    fontWeight: 'bold',
+    marginBottom: 24,
     textAlign: 'center',
-    lineHeight: 36,
   },
-  dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 40,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#ddd',
-    marginHorizontal: 4,
-  },
-  dotActive: {
-    backgroundColor: '#111',
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   button: {
-    backgroundColor: '#111',
-    paddingVertical: 16,
-    borderRadius: 8,
+    backgroundColor: '#6B4EFF',
+    borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
+    marginTop: 8,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
-    letterSpacing: 2,
   },
-});
+  switchButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  switchText: {
+    color: '#6B4EFF',
+    fontSize: 14,
+  },
+})

@@ -1,138 +1,182 @@
-// VERBA - Settings Screen
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, Switch, Alert } from 'react-native'
+import { updateProfile } from '../lib/supabase'
 
-export default function SettingsScreen({ navigation }) {
-  const [ghostMode, setGhostMode] = React.useState(true);
+export default function SettingsScreen({ profile, onSignOut, onBack }) {
+  const [ghostMode, setGhostMode] = useState(profile?.ghost_mode || false)
+  const [loading, setLoading] = useState(false)
+
+  const toggleGhostMode = async (value) => {
+    setLoading(true)
+    setGhostMode(value)
+    
+    if (profile) {
+      await updateProfile(profile.user_id, { ghost_mode: value })
+    }
+    setLoading(false)
+  }
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign Out', style: 'destructive', onPress: onSignOut },
+      ]
+    )
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.back}>←</Text>
+        <TouchableOpacity onPress={onBack}>
+          <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
-        <View style={{ width: 30 }} />
+        <View style={styles.placeholder} />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Privacy</Text>
         
         <View style={styles.setting}>
-          <View>
-            <Text style={styles.settingLabel}>Ghost Mode</Text>
-            <Text style={styles.settingDesc}>Hide online status</Text>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>👻 Ghost Mode</Text>
+            <Text style={styles.settingDesc}>Hide online status & last seen</Text>
           </View>
           <Switch
             value={ghostMode}
-            onValueChange={setGhostMode}
-            trackColor={{ false: '#ddd', true: '#111' }}
+            onValueChange={toggleGhostMode}
+            trackColor={{ false: '#ddd', true: '#6B4EFF' }}
+            disabled={loading}
           />
-        </View>
-
-        <View style={styles.setting}>
-          <View>
-            <Text style={styles.settingLabel}>Read Receipts</Text>
-            <Text style={styles.settingDesc}>Let others know when you've read messages</Text>
-          </View>
-          <Switch value={false} trackColor={{ false: '#ddd', true: '#111' }} />
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Preferences</Text>
+        <Text style={styles.sectionTitle}>Your Profile</Text>
         
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Edit Profile</Text>
+          <Text style={styles.menuText}>Edit Story</Text>
+          <Text style={styles.menuArrow}>→</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Blocked Users</Text>
+          <Text style={styles.menuText}>Interests</Text>
+          <Text style={styles.menuArrow}>→</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>Help & Support</Text>
+          <Text style={styles.menuText}>Photo Settings</Text>
+          <Text style={styles.menuArrow}>→</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity 
-        style={styles.logout}
-        onPress={() => navigation.replace('Onboarding')}
-      >
-        <Text style={styles.logoutText}>Log Out</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>App</Text>
+        
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>How It Works</Text>
+          <Text style={styles.menuArrow}>→</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>Privacy Policy</Text>
+          <Text style={styles.menuArrow}>→</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
+
+      <Text style={styles.version}>Verba v1.0.0</Text>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
+    paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#fff',
+    justifyContent: 'space-between',
+    padding: 16,
   },
-  back: {
-    fontSize: 24,
-    color: '#111',
+  backButton: {
+    fontSize: 28,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#111',
+  },
+  placeholder: {
+    width: 28,
   },
   section: {
-    marginTop: 20,
-    paddingHorizontal: 20,
+    padding: 16,
+    borderBottomWidth: 8,
+    borderBottomColor: '#f8f8f8',
   },
   sectionTitle: {
     fontSize: 14,
+    fontWeight: '600',
     color: '#999',
     marginBottom: 16,
-    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   setting: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    justifyContent: 'space-between',
+  },
+  settingInfo: {
+    flex: 1,
   },
   settingLabel: {
-    fontSize: 16,
-    color: '#111',
+    fontSize: 18,
+    marginBottom: 4,
   },
   settingDesc: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
+    fontSize: 14,
+    color: '#666',
   },
   menuItem: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   menuText: {
     fontSize: 16,
-    color: '#111',
   },
-  logout: {
-    marginTop: 40,
-    marginHorizontal: 20,
-    padding: 16,
-    alignItems: 'center',
-  },
-  logoutText: {
+  menuArrow: {
     fontSize: 16,
     color: '#999',
   },
-});
+  signOutButton: {
+    margin: 16,
+    padding: 16,
+    backgroundColor: '#fee',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  signOutText: {
+    color: '#ff4444',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  version: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: 12,
+    marginTop: 16,
+  },
+})
