@@ -122,7 +122,10 @@ export default function DiscoverScreen({ userData, onMatch, onOpenSettings }) {
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
           <View style={styles.navIcon}>
-            <Text style={styles.navIconText}>S</Text>
+            <View style={styles.settingsIcon}>
+              <View style={styles.settingsCircle} />
+              <View style={styles.settingsHole} />
+            </View>
           </View>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
@@ -159,7 +162,9 @@ const styles = StyleSheet.create({
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
   navIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  navIconText: { fontFamily: 'Space Mono', fontSize: 14, color: '#bbb', fontWeight: 'bold' },
+  settingsIcon: { width: 16, height: 16, position: 'relative', justifyContent: 'center', alignItems: 'center' },
+  settingsCircle: { width: 14, height: 14, borderRadius: 7, borderWidth: 2, borderColor: '#888' },
+  settingsHole: { position: 'absolute', width: 4, height: 4, borderRadius: 2, backgroundColor: '#888' },
   navIconActive: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
   navIconTextActive: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
   navLabelActive: { fontFamily: 'Space Mono', fontSize: 9, color: '#1a1a1a', fontWeight: 'bold' },
