@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native'
-
-const { width } = Dimensions.get('window')
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 
 const quizQuestions = [
   { id: 1, question: "What's your ideal first date?", options: ["Coffee shop chat", "Long walk", "Activity together", "Virtual movie"] },
@@ -12,7 +10,6 @@ const quizQuestions = [
 export default function QuizScreen({ userData, onComplete, onBack }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
-  const scrollX = new Animated.Value(0)
 
   const handleAnswer = (option) => {
     const newAnswers = { ...answers, [currentQuestion]: option }
@@ -37,11 +34,7 @@ export default function QuizScreen({ userData, onComplete, onBack }) {
   }
 
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
-
-  const onScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } }],
-    { useNativeDriver: true }
-  )
+  const q = quizQuestions[currentQuestion]
 
   return (
     <View style={styles.container}>
@@ -55,35 +48,22 @@ export default function QuizScreen({ userData, onComplete, onBack }) {
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
       </View>
       
-      <Animated.ScrollView 
-        horizontal 
-        pagingEnabled 
-        showsHorizontalScrollIndicator={false} 
-        scrollEventThrottle={16} 
-        onScroll={onScroll} 
-        style={styles.questionScroll}
-      >
-        {quizQuestions.map((q, index) => (
-          <View key={q.id} style={styles.questionSlide}>
-            <Text style={styles.questionNumber}>{index + 1} / {quizQuestions.length}</Text>
-            <Text style={styles.question}>{q.question}</Text>
-            <View style={styles.options}>
-              {q.options.map((option, optIndex) => (
-                <TouchableOpacity key={optIndex} style={styles.optionButton} onPress={() => handleAnswer(option)}>
-                  <Text style={styles.optionText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        ))}
-      </Animated.ScrollView>
+      <View style={styles.questionView}>
+        <Text style={styles.questionNumber}>{currentQuestion + 1} / {quizQuestions.length}</Text>
+        <Text style={styles.question}>{q.question}</Text>
+        <View style={styles.options}>
+          {q.options.map((option, optIndex) => (
+            <TouchableOpacity key={optIndex} style={styles.optionButton} onPress={() => handleAnswer(option)}>
+              <Text style={styles.optionText}>{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
 
       <View style={styles.dotsContainer}>
-        {quizQuestions.map((_, index) => {
-          const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
-          const scale = scrollX.interpolate({ inputRange, outputRange: [0.8, 1.2, 0.8], extrapolate: 'clamp' })
-          return <Animated.View key={index} style={[styles.dot, { transform: [{ scale }] }]} />
-        })}
+        {quizQuestions.map((_, index) => (
+          <View key={index} style={[styles.dot, index === currentQuestion && styles.dotActive]} />
+        ))}
       </View>
     </View>
   )
@@ -97,13 +77,13 @@ const styles = StyleSheet.create({
   skipText: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', letterSpacing: 1 },
   progressContainer: { height: 3, backgroundColor: '#eee', marginHorizontal: 20, borderRadius: 2 },
   progressBar: { height: '100%', backgroundColor: '#1a1a1a', borderRadius: 2 },
-  questionScroll: { flex: 1 },
-  questionSlide: { width, paddingHorizontal: 30, paddingTop: 30 },
+  questionView: { flex: 1, paddingHorizontal: 30, paddingTop: 30 },
   questionNumber: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', letterSpacing: 2, marginBottom: 8 },
   question: { fontFamily: 'Cormorant Garamond', fontSize: 26, fontStyle: 'italic', marginBottom: 30, color: '#1a1a1a', lineHeight: 36 },
   options: { gap: 12 },
   optionButton: { backgroundColor: '#fff', borderRadius: 12, padding: 20, borderWidth: 1, borderColor: '#eee' },
   optionText: { fontFamily: 'Cormorant Garamond', fontSize: 18, textAlign: 'center', color: '#1a1a1a' },
   dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#1a1a1a', marginHorizontal: 3 },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#ccc', marginHorizontal: 3 },
+  dotActive: { backgroundColor: '#1a1a1a' },
 })
