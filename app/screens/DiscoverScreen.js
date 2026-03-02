@@ -32,59 +32,25 @@ const demoProfiles = [
   }
 ]
 
-// Clean Heart Icon - simple two-circle + triangle approach
-const HeartIcon = ({ size = 24, color = '#fff' }) => (
-  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{ position: 'relative', width: size, height: size }}>
-      {/* Left circle */}
-      <View style={{
-        position: 'absolute',
-        width: size / 2,
-        height: size / 2,
-        backgroundColor: color,
-        borderRadius: size / 4,
-        left: 0,
-        top: size / 8,
-      }} />
-      {/* Right circle */}
-      <View style={{
-        position: 'absolute',
-        width: size / 2,
-        height: size / 2,
-        backgroundColor: color,
-        borderRadius: size / 4,
-        right: 0,
-        top: size / 8,
-      }} />
-      {/* Bottom triangle */}
-      <View style={{
-        position: 'absolute',
-        width: 0,
-        height: 0,
-        borderLeftWidth: size / 4,
-        borderRightWidth: size / 4,
-        borderBottomWidth: size / 3,
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: color,
-        bottom: 0,
-        left: size / 4,
-      }} />
-    </View>
+// Simple clear heart
+const HeartIcon = () => (
+  <View style={{ width: 24, height: 24, position: 'relative' }}>
+    <View style={{ position: 'absolute', width: 12, height: 12, backgroundColor: '#fff', borderRadius: 6, left: 0, top: 2 }} />
+    <View style={{ position: 'absolute', width: 12, height: 12, backgroundColor: '#fff', borderRadius: 6, right: 0, top: 2 }} />
+    <View style={{ position: 'absolute', width: 0, height: 0, borderLeftWidth: 6, borderRightWidth: 6, borderBottomWidth: 10, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: '#fff', left: 6, bottom: 0 }} />
   </View>
 )
 
-const XIcon = ({ size = 26 }) => (
-  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{ width: size * 0.7, height: 3, backgroundColor: '#999', borderRadius: 2, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
-    <View style={{ width: size * 0.7, height: 3, backgroundColor: '#999', borderRadius: 2, transform: [{ rotate: '-45deg' }], position: 'absolute' }} />
+const XIcon = () => (
+  <View style={{ width: 20, height: 20, position: 'relative' }}>
+    <View style={{ position: 'absolute', width: 14, height: 2, backgroundColor: '#999', transform: [{ rotate: '45deg' }], top: 9, left: 3 }} />
+    <View style={{ position: 'absolute', width: 14, height: 2, backgroundColor: '#999', transform: [{ rotate: '-45deg' }], top: 9, left: 3 }} />
   </View>
 )
 
-const GearIcon = ({ size = 18 }) => (
-  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{ width: size * 0.5, height: size * 0.5, borderRadius: size * 0.25, borderWidth: 2.5, borderColor: '#888', backgroundColor: '#f0f0f0' }} />
-    <View style={{ width: size * 0.18, height: size * 0.18, borderRadius: size * 0.09, backgroundColor: '#888', position: 'absolute' }} />
+const GearIcon = () => (
+  <View style={{ width: 18, height: 18, position: 'relative' }}>
+    <View style={{ width: 9, height: 9, borderRadius: 4.5, border: 2, borderColor: '#888', backgroundColor: '#f0f0f0', position: 'absolute', top: 4.5, left: 4.5 }} />
   </View>
 )
 
@@ -154,11 +120,11 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <XIcon size={26} />
+                <XIcon />
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <HeartIcon size={28} color="#fff" />
+                <HeartIcon />
               </TouchableOpacity>
             </View>
           </View>
@@ -178,7 +144,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
           <View style={styles.navIcon}>
-            <GearIcon size={18} />
+            <GearIcon />
           </View>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
