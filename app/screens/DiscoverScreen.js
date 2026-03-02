@@ -6,22 +6,19 @@ const demoProfiles = [
     id: '1',
     name: 'Sarah',
     age: 28,
-    gender: 'woman',
-    bio: "I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover. Always curious about people's stories.",
+    bio: "I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover.",
     writingStyle: 'thoughtful',
     interests: ['books', 'coffee', 'writing'],
     promptAnswers: {
       0: "Warm coffee on a rainy morning, the smell of old books, and quiet moments with good music.",
-      1: "Harper Lee - her perspective on humanity changed how I see the world.",
-      2: "Storytelling in all forms - writing, film, conversations that go deep into the night."
+      1: "Harper Lee - her perspective on humanity changed how I see the world."
     }
   },
   {
     id: '2',
     name: 'James',
     age: 31,
-    gender: 'man',
-    bio: "Writer by night, architect by day. Looking for someone who understands the beauty in quiet moments and long walks without a destination.",
+    bio: "Writer by night, architect by day. Looking for someone who understands the beauty in quiet moments.",
     writingStyle: 'friendly',
     interests: ['writing', 'architecture', 'walking']
   },
@@ -29,12 +26,86 @@ const demoProfiles = [
     id: '3',
     name: 'Elena',
     age: 26,
-    gender: 'woman',
-    bio: "Music lover. Cat person. Believer in meaningful conversations over small talk. Let's talk about dreams, books, and the universe.",
+    bio: "Music lover. Believer in meaningful conversations over small talk.",
     writingStyle: 'casual',
     interests: ['music', 'cats', 'reading']
   }
 ]
+
+// Clean Heart Icon
+const HeartIcon = ({ size = 28, color = '#fff' }) => (
+  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{
+      width: size * 0.9,
+      height: size * 0.8,
+      position: 'relative',
+    }}>
+      <View style={{
+        position: 'absolute',
+        width: size * 0.5,
+        height: size * 0.5,
+        backgroundColor: color,
+        borderRadius: size * 0.25,
+        top: 0,
+        left: size * 0.1,
+        transform: [{ rotate: '-45deg' }],
+      }} />
+      <View style={{
+        position: 'absolute',
+        width: size * 0.5,
+        height: size * 0.5,
+        backgroundColor: color,
+        borderRadius: size * 0.25,
+        top: size * 0.2,
+        right: size * 0.1,
+        transform: [{ rotate: '45deg' }],
+      }} />
+    </View>
+  </View>
+)
+
+// Clean X Icon  
+const XIcon = ({ size = 24 }) => (
+  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{
+      width: size * 0.8,
+      height: 3,
+      backgroundColor: '#999',
+      borderRadius: 2,
+      transform: [{ rotate: '45deg' }],
+      position: 'absolute',
+    }} />
+    <View style={{
+      width: size * 0.8,
+      height: 3,
+      backgroundColor: '#999',
+      borderRadius: 2,
+      transform: [{ rotate: '-45deg' }],
+      position: 'absolute',
+    }} />
+  </View>
+)
+
+// Clean Gear Icon
+const GearIcon = ({ size = 18 }) => (
+  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{
+      width: size * 0.5,
+      height: size * 0.5,
+      borderRadius: size * 0.25,
+      borderWidth: 2.5,
+      borderColor: '#888',
+      backgroundColor: '#f0f0f0',
+    }} />
+    <View style={{
+      width: size * 0.18,
+      height: size * 0.18,
+      borderRadius: size * 0.09,
+      backgroundColor: '#888',
+      position: 'absolute',
+    }} />
+  </View>
+)
 
 export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings }) {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -109,21 +180,11 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <View style={styles.passBtnInner}>
-                  <View style={styles.xIcon}>
-                    <View style={[styles.xLine, styles.xLine1]} />
-                    <View style={[styles.xLine, styles.xLine2]} />
-                  </View>
-                </View>
+                <XIcon size={26} />
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <View style={styles.likeBtnInner}>
-                  <View style={styles.heartIcon}>
-                    <View style={styles.heartTop} />
-                    <View style={styles.heartBottom} />
-                  </View>
-                </View>
+                <HeartIcon size={30} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
@@ -143,9 +204,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
           <View style={styles.navIcon}>
-            <View style={styles.gearIcon}>
-              <View style={styles.gearCenter} />
-            </View>
+            <GearIcon size={18} />
           </View>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
@@ -180,24 +239,12 @@ const styles = StyleSheet.create({
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingTop: 8 },
   passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
-  passBtnInner: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
-  xIcon: { width: 20, height: 20, position: 'relative' },
-  xLine: { position: 'absolute', width: 20, height: 2, backgroundColor: '#999', borderRadius: 1 },
-  xLine1: { transform: [{ rotate: '45deg' }], top: 9 },
-  xLine2: { transform: [{ rotate: '-45deg' }], top: 9 },
   likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  likeBtnInner: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
-  heartIcon: { width: 20, height: 18, position: 'relative' },
-  heartTop: { position: 'absolute', width: 10, height: 10, backgroundColor: '#fff', borderRadius: 5, top: 0, left: 5, transform: [{ rotate: '-45deg' }] },
-  heartBottom: { position: 'absolute', width: 10, height: 10, backgroundColor: '#fff', borderRadius: 5, top: 5, left: 10, transform: [{ rotate: '45deg' }] },
   queueInfo: { alignItems: 'center', marginTop: 16 },
   queueText: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
   navIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  gearIcon: { width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: '#bbb', position: 'relative' },
-  gearCenter: { position: 'absolute', width: 4, height: 4, backgroundColor: '#bbb', borderRadius: 2, top: 4, left: 4 },
-  navIconText: { fontFamily: 'Space Mono', fontSize: 14, color: '#bbb', fontWeight: 'bold' },
   navIconActive: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
   navIconTextActive: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
   navLabelActive: { fontFamily: 'Space Mono', fontSize: 9, color: '#1a1a1a', fontWeight: 'bold' },
