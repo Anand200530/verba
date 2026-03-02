@@ -109,11 +109,21 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <Text style={styles.passIcon}>NO</Text>
+                <View style={styles.passBtnInner}>
+                  <View style={styles.xIcon}>
+                    <View style={[styles.xLine, styles.xLine1]} />
+                    <View style={[styles.xLine, styles.xLine2]} />
+                  </View>
+                </View>
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <Text style={styles.likeIcon}>LIKE</Text>
+                <View style={styles.likeBtnInner}>
+                  <View style={styles.heartIcon}>
+                    <View style={styles.heartTop} />
+                    <View style={styles.heartBottom} />
+                  </View>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -133,7 +143,9 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
           <View style={styles.navIcon}>
-            <Text style={styles.navIconText}>S</Text>
+            <View style={styles.gearIcon}>
+              <View style={styles.gearCenter} />
+            </View>
           </View>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
@@ -167,15 +179,24 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: '#1a1a1a', paddingVertical: 6, paddingHorizontal: 14, borderRadius: 20 },
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingTop: 8 },
-  passBtn: { width: 100, height: 50, borderRadius: 25, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
-  passIcon: { fontFamily: 'Space Mono', fontSize: 12, color: '#999', fontWeight: 'bold' },
-  likeBtn: { width: 100, height: 50, borderRadius: 25, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  likeIcon: { fontFamily: 'Space Mono', fontSize: 12, color: '#fff', fontWeight: 'bold' },
+  passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
+  passBtnInner: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
+  xIcon: { width: 20, height: 20, position: 'relative' },
+  xLine: { position: 'absolute', width: 20, height: 2, backgroundColor: '#999', borderRadius: 1 },
+  xLine1: { transform: [{ rotate: '45deg' }], top: 9 },
+  xLine2: { transform: [{ rotate: '-45deg' }], top: 9 },
+  likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
+  likeBtnInner: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
+  heartIcon: { width: 20, height: 18, position: 'relative' },
+  heartTop: { position: 'absolute', width: 10, height: 10, backgroundColor: '#fff', borderRadius: 5, top: 0, left: 5, transform: [{ rotate: '-45deg' }] },
+  heartBottom: { position: 'absolute', width: 10, height: 10, backgroundColor: '#fff', borderRadius: 5, top: 5, left: 10, transform: [{ rotate: '45deg' }] },
   queueInfo: { alignItems: 'center', marginTop: 16 },
   queueText: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
   navIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
+  gearIcon: { width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: '#bbb', position: 'relative' },
+  gearCenter: { position: 'absolute', width: 4, height: 4, backgroundColor: '#bbb', borderRadius: 2, top: 4, left: 4 },
   navIconText: { fontFamily: 'Space Mono', fontSize: 14, color: '#bbb', fontWeight: 'bold' },
   navIconActive: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
   navIconTextActive: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
