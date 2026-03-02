@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { 
   View, Text, TextInput, TouchableOpacity, StyleSheet, 
-  ScrollView, Animated, Dimensions, KeyboardAvoidingView, Platform,
-  Alert 
+  Animated, Dimensions 
 } from 'react-native'
 
 const { width } = Dimensions.get('window')
@@ -10,26 +9,25 @@ const { width } = Dimensions.get('window')
 const slides = [
   { 
     text: "What you say matters, not how you look", 
-    subtext: "Connect through words, not appearances"
+    subtext: "Connect through words, not appearances",
+    icon: "✍️"
   },
   { 
     text: "Your story is your introduction", 
-    subtext: "Let your writing speak for you"
+    subtext: "Let your writing speak for you",
+    icon: "📖"
   },
   { 
     text: "Photos reveal only when both agree", 
-    subtext: "True connection comes from within"
+    subtext: "True connection comes from within",
+    icon: "🎭"
   },
 ]
 
-export default function OnboardingScreen({ onSignUp, onSignIn }) {
-  const [screen, setScreen] = useState('onboarding') // 'onboarding' | 'auth'
-  const [authMode, setAuthMode] = useState('login') // 'login' | 'signup'
+export default function OnboardingScreen({ onComplete }) {
+  const [screen, setScreen] = useState('onboarding') // 'onboarding' | 'name'
   const [slideIndex, setSlideIndex] = useState(0)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  
+  const [name, setName] = useState('')
   const scrollX = useRef(new Animated.Value(0)).current
 
   const onScroll = Animated.event(
@@ -37,201 +35,104 @@ export default function OnboardingScreen({ onSignUp, onSignIn }) {
     { useNativeDriver: true }
   )
 
-  const handleAuth = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Missing fields', 'Please fill in all fields')
-      return
+  const handleNameSubmit = () => {
+    if (name.trim()) {
+      onComplete(name.trim())
     }
-
-    if (password.length < 6) {
-      Alert.alert('Weak password', 'Password must be at least 6 characters')
-      return
-    }
-
-    setLoading(true)
-    try {
-      if (authMode === 'login') {
-        await onSignIn(email, password)
-      } else {
-        await onSignUp(email, password)
-      }
-    } catch (error) {
-      Alert.alert('Error', error.message || 'Something went wrong')
-    }
-    setLoading(false)
   }
 
-  // Onboarding Screen
-  if (screen === 'onboarding') {
+  // Name Input Screen
+  if (screen === 'name') {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={styles.nameHeader}>
           <Text style={styles.logo}>VERBA</Text>
-          <Text style={styles.tagline}>WORDS BEFORE LOOKS</Text>
         </View>
 
-        <Animated.ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
-          style={styles.slideScroll}
-        >
-          {slides.map((slide, index) => (
-            <View key={index} style={styles.slide}>
-              <View style={styles.slideIconContainer}>
-                <Text style={styles.slideIcon}>
-                  {index === 0 ? '✍️' : index === 1 ? '📖' : '🎭'}
-                </Text>
-              </View>
-              <Text style={styles.slideText}>{slide.text}</Text>
-              <Text style={styles.slideSubtext}>{slide.subtext}</Text>
-            </View>
-          ))}
-        </Animated.ScrollView>
+        <View style={styles.nameContent}>
+          <Text style={styles.nameTitle}>What should we call you?</Text>
+          <Text style={styles.nameSubtitle}>This is how you'll appear to others</Text>
 
-        <View style={styles.dotsContainer}>
-          {slides.map((_, index) => {
-            const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
-            const scale = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.8, 1.2, 0.8],
-              extrapolate: 'clamp',
-            })
-            const opacity = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.4, 1, 0.4],
-              extrapolate: 'clamp',
-            })
-            return (
-              <Animated.View 
-                key={index} 
-                style={[
-                  styles.dot, 
-                  { transform: [{ scale }], opacity }
-                ]} 
-              />
-            )
-          })}
-        </View>
+          <TextInput
+            style={styles.nameInput}
+            placeholder="Your name"
+            placeholderTextColor="#bbb"
+            value={name}
+            onChangeText={setName}
+            autoFocus
+            autoCapitalize="words"
+          />
 
-        <View style={styles.onboardingFooter}>
           <TouchableOpacity 
-            style={styles.primaryBtn}
-            onPress={() => setScreen('auth')}
+            style={[styles.nameBtn, !name.trim() && styles.nameBtnDisabled]}
+            onPress={handleNameSubmit}
+            disabled={!name.trim()}
           >
-            <Text style={styles.primaryBtnText}>GET STARTED</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.loginLink}
-            onPress={() => { setScreen('auth'); setAuthMode('login'); }}
-          >
-            <Text style={styles.loginLinkText}>Already have an account? Sign in</Text>
+            <Text style={styles.nameBtnText}>CONTINUE</Text>
           </TouchableOpacity>
         </View>
       </View>
     )
   }
 
-  // Auth Screen
+  // Onboarding Screen
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView 
-        contentContainerStyle={styles.authContent}
-        keyboardShouldPersistTaps="handled"
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.logo}>VERBA</Text>
+        <Text style={styles.tagline}>WORDS BEFORE LOOKS</Text>
+      </View>
+
+      <Animated.ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        style={styles.slideScroll}
       >
+        {slides.map((slide, index) => (
+          <View key={index} style={styles.slide}>
+            <View style={styles.slideIconContainer}>
+              <Text style={styles.slideIcon}>{slide.icon}</Text>
+            </View>
+            <Text style={styles.slideText}>{slide.text}</Text>
+            <Text style={styles.slideSubtext}>{slide.subtext}</Text>
+          </View>
+        ))}
+      </Animated.ScrollView>
+
+      <View style={styles.dotsContainer}>
+        {slides.map((_, index) => {
+          const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
+          const scale = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.8, 1.2, 0.8],
+            extrapolate: 'clamp',
+          })
+          const opacity = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.4, 1, 0.4],
+            extrapolate: 'clamp',
+          })
+          return (
+            <Animated.View 
+              key={index} 
+              style={[styles.dot, { transform: [{ scale }], opacity }]} 
+            />
+          )
+        })}
+      </View>
+
+      <View style={styles.footer}>
         <TouchableOpacity 
-          style={styles.backBtn}
-          onPress={() => setScreen('onboarding')}
+          style={styles.primaryBtn}
+          onPress={() => setScreen('name')}
         >
-          <Text style={styles.backBtnText}>←</Text>
+          <Text style={styles.primaryBtnText}>GET STARTED</Text>
         </TouchableOpacity>
-
-        <View style={styles.authHeader}>
-          <Text style={styles.logo}>VERBA</Text>
-          <Text style={styles.tagline}>WORDS BEFORE LOOKS</Text>
-        </View>
-
-        <View style={styles.authForm}>
-          <Text style={styles.authTitle}>
-            {authMode === 'login' ? 'Welcome back' : 'Create your account'}
-          </Text>
-          <Text style={styles.authSubtitle}>
-            {authMode === 'login' 
-              ? 'Sign in to continue your journey' 
-              : 'Start by telling your story'}
-          </Text>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>EMAIL</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="your@email.com"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoCorrect={false}
-              placeholderTextColor="#bbb"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>PASSWORD</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="••••••••"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              placeholderTextColor="#bbb"
-            />
-          </View>
-
-          {authMode === 'signup' && (
-            <Text style={styles.termsText}>
-              By signing up, you agree to our Terms of Service and Privacy Policy
-            </Text>
-          )}
-
-          <TouchableOpacity 
-            style={[styles.primaryBtn, loading && styles.primaryBtnDisabled]}
-            onPress={handleAuth}
-            disabled={loading}
-          >
-            <Text style={styles.primaryBtnText}>
-              {loading ? 'PLEASE WAIT...' : authMode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
-          </View>
-
-          <TouchableOpacity style={styles.socialBtn}>
-            <Text style={styles.socialBtnText}>Continue with Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.switchMode}
-            onPress={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
-          >
-            <Text style={styles.switchModeText}>
-              {authMode === 'login' 
-                ? "Don't have an account? Sign up" 
-                : 'Already have an account? Sign in'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </View>
   )
 }
 
@@ -312,7 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     marginHorizontal: 4,
   },
-  onboardingFooter: {
+  footer: {
     paddingHorizontal: 30,
     paddingBottom: 40,
   },
@@ -322,9 +223,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  primaryBtnDisabled: {
-    opacity: 0.6,
-  },
   primaryBtnText: {
     fontFamily: 'Space Mono',
     fontSize: 11,
@@ -332,122 +230,59 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  loginLink: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  loginLinkText: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#1a1a1a',
-  },
-  
-  // Auth Styles
-  authContent: {
-    padding: 30,
+
+  // Name Screen
+  nameHeader: {
     paddingTop: 40,
-  },
-  backBtn: {
-    marginBottom: 20,
-    width: 40,
-  },
-  backBtnText: {
-    fontSize: 24,
-    color: '#1a1a1a',
-  },
-  authHeader: {
     alignItems: 'center',
-    marginBottom: 30,
   },
-  authForm: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 20,
+  nameContent: {
+    flex: 1,
+    paddingHorizontal: 30,
+    justifyContent: 'center',
   },
-  authTitle: {
+  nameTitle: {
     fontFamily: 'Cormorant Garamond',
-    fontSize: 26,
+    fontSize: 28,
     fontStyle: 'italic',
     color: '#1a1a1a',
     textAlign: 'center',
-    marginBottom: 4,
-  },
-  authSubtitle: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#999',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontFamily: 'Space Mono',
-    fontSize: 9,
-    letterSpacing: 1,
-    color: '#999',
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: '#faf9f7',
-    borderRadius: 10,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    fontFamily: 'Space Mono',
-    fontSize: 13,
-    color: '#1a1a1a',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  termsText: {
-    fontFamily: 'Space Mono',
-    fontSize: 9,
-    color: '#bbb',
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 14,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#eee',
-  },
-  dividerText: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#ccc',
-    marginHorizontal: 12,
-  },
-  socialBtn: {
-    backgroundColor: '#faf9f7',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  socialBtnText: {
+  nameSubtitle: {
     fontFamily: 'Space Mono',
     fontSize: 11,
-    color: '#1a1a1a',
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 40,
   },
-  switchMode: {
-    marginTop: 20,
+  nameInput: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    fontFamily: 'Space Mono',
+    fontSize: 18,
+    color: '#1a1a1a',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: '#eee',
+    marginBottom: 20,
+  },
+  nameBtn: {
+    backgroundColor: '#1a1a1a',
+    paddingVertical: 18,
+    borderRadius: 12,
     alignItems: 'center',
   },
-  switchModeText: {
+  nameBtnDisabled: {
+    opacity: 0.4,
+  },
+  nameBtnText: {
     fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#1a1a1a',
+    fontSize: 11,
+    letterSpacing: 3,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 })

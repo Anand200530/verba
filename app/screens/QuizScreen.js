@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native'
+
+const { width } = Dimensions.get('window')
 
 const quizQuestions = [
   {
@@ -29,9 +31,10 @@ const quizQuestions = [
   },
 ]
 
-export default function QuizScreen({ onComplete }) {
+export default function QuizScreen({ userName, onComplete }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
+  const scrollX = new Animated.Value(0)
 
   const handleAnswer = (option) => {
     const newAnswers = { ...answers, [currentQuestion]: option }
@@ -48,31 +51,69 @@ export default function QuizScreen({ onComplete }) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => onComplete({})} style={styles.skipBtn}>
+          <Text style={styles.skipText}>SKIP</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{userName}'s Quiz</Text>
+      </View>
+
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
       </View>
       
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.questionNumber}>
-          {currentQuestion + 1} / {quizQuestions.length}
-        </Text>
-        
-        <Text style={styles.question}>
-          {quizQuestions[currentQuestion].question}
-        </Text>
+      <Animated.ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        style={styles.questionScroll}
+      >
+        {quizQuestions.map((q, index) => (
+          <View key={q.id} style={styles.questionSlide}>
+            <Text style={styles.questionNumber}>
+              {index + 1} / {quizQuestions.length}
+            </Text>
+            
+            <Text style={styles.question}>
+              {q.question}
+            </Text>
 
-        <View style={styles.options}>
-          {quizQuestions[currentQuestion].options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.optionButton}
-              onPress={() => handleAnswer(option)}
-            >
-              <Text style={styles.optionText}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+            <View style={styles.options}>
+              {q.options.map((option, optIndex) => (
+                <TouchableOpacity
+                  key={optIndex}
+                  style={styles.optionButton}
+                  onPress={() => handleAnswer(option)}
+                >
+                  <Text style={styles.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        ))}
+      </Animated.ScrollView>
+
+      <View style={styles.dotsContainer}>
+        {quizQuestions.map((_, index) => {
+          const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
+          const scale = scrollX.interpolate({
+            inputRange,
+            outputRange: [0.8, 1.2, 0.8],
+            extrapolate: 'clamp',
+          })
+          return (
+            <Animated.View 
+              key={index} 
+              style={[styles.dot, { transform: [{ scale }] }]} 
+            />
+          )
+        })}
+      </View>
     </View>
   )
 }
@@ -82,17 +123,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#faf9f7',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 10,
+  },
+  skipBtn: {
+    padding: 8,
+  },
+  skipText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#999',
+    letterSpacing: 1,
+  },
+  headerTitle: {
+    fontFamily: 'Space Mono',
+    fontSize: 12,
+    color: '#1a1a1a',
+  },
   progressContainer: {
     height: 3,
     backgroundColor: '#eee',
+    marginHorizontal: 20,
+    borderRadius: 2,
   },
   progressBar: {
     height: '100%',
     backgroundColor: '#1a1a1a',
+    borderRadius: 2,
   },
-  content: {
-    padding: 30,
-    paddingTop: 50,
+  questionScroll: {
+    flex: 1,
+  },
+  questionSlide: {
+    width,
+    paddingHorizontal: 30,
+    paddingTop: 30,
   },
   questionNumber: {
     fontFamily: 'Space Mono',
@@ -105,7 +175,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Cormorant Garamond',
     fontSize: 26,
     fontStyle: 'italic',
-    marginBottom: 40,
+    marginBottom: 30,
     color: '#1a1a1a',
     lineHeight: 36,
   },
@@ -124,5 +194,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#1a1a1a',
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#1a1a1a',
+    marginHorizontal: 3,
   },
 })

@@ -1,24 +1,16 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Switch, Alert } from 'react-native'
-import { updateProfile } from '../lib/supabase'
 
-export default function SettingsScreen({ profile, onSignOut, onBack }) {
-  const [ghostMode, setGhostMode] = useState(profile?.ghost_mode || false)
-
-  const toggleGhostMode = async (value) => {
-    setGhostMode(value)
-    if (profile) {
-      await updateProfile(profile.user_id, { ghost_mode: value })
-    }
-  }
+export default function SettingsScreen({ userName, profileData, onBack, onSignOut }) {
+  const [ghostMode, setGhostMode] = useState(true)
 
   const handleSignOut = () => {
     Alert.alert(
-      'Sign Out',
-      'Are you sure?',
+      'Start Over',
+      'This will reset your profile and start fresh. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign Out', style: 'destructive', onPress: onSignOut },
+        { text: 'Start Over', style: 'destructive', onPress: onSignOut },
       ]
     )
   }
@@ -33,6 +25,14 @@ export default function SettingsScreen({ profile, onSignOut, onBack }) {
         <View style={styles.placeholder} />
       </View>
 
+      <View style={styles.profileCard}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>🎭</Text>
+        </View>
+        <Text style={styles.profileName}>{userName}</Text>
+        <Text style={styles.profileStatus}>Photos hidden</Text>
+      </View>
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>PRIVACY</Text>
         
@@ -43,7 +43,7 @@ export default function SettingsScreen({ profile, onSignOut, onBack }) {
           </View>
           <Switch
             value={ghostMode}
-            onValueChange={toggleGhostMode}
+            onValueChange={setGhostMode}
             trackColor={{ false: '#ddd', true: '#1a1a1a' }}
           />
         </View>
@@ -83,7 +83,7 @@ export default function SettingsScreen({ profile, onSignOut, onBack }) {
       </View>
 
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutText}>Sign Out</Text>
+        <Text style={styles.signOutText}>Start Over</Text>
       </TouchableOpacity>
 
       <Text style={styles.version}>VERBA v1.0.0</Text>
@@ -116,6 +116,36 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 24,
+  },
+  profileCard: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    paddingVertical: 30,
+    borderBottomWidth: 8,
+    borderBottomColor: '#f8f8f8',
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#1a1a1a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  avatarText: {
+    fontSize: 32,
+  },
+  profileName: {
+    fontFamily: 'Space Mono',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  profileStatus: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#999',
   },
   section: {
     padding: 20,

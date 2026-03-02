@@ -1,47 +1,57 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native'
-import { discoverProfiles, createMatch, getProfile } from '../lib/supabase'
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
-export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettings }) {
-  const [profiles, setProfiles] = useState([])
-  const [refreshing, setRefreshing] = useState(false)
-
-  // Demo profiles for testing
-  const demoProfiles = [
-    {
-      id: '1',
-      display_name: 'Sarah',
-      age: 28,
-      bio: "I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover. Always curious about people's stories.",
-      interests: ['books', 'coffee', 'writing']
-    },
-    {
-      id: '2',
-      display_name: 'James',
-      age: 31,
-      bio: "Writer by night, architect by day. Looking for someone who understands the beauty in quiet moments and long walks without a destination.",
-      interests: ['writing', 'architecture', 'walking']
-    }
-  ]
-
-  const loadProfiles = async () => {
-    setRefreshing(false)
+// Demo profiles
+const demoProfiles = [
+  {
+    id: '1',
+    name: 'Sarah',
+    age: 28,
+    bio: "I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover. Always curious about people's stories.",
+    interests: ['books', 'coffee', 'writing']
+  },
+  {
+    id: '2',
+    name: 'James',
+    age: 31,
+    bio: "Writer by night, architect by day. Looking for someone who understands the beauty in quiet moments and long walks without a destination.",
+    interests: ['writing', 'architecture', 'walking']
+  },
+  {
+    id: '3',
+    name: 'Elena',
+    age: 26,
+    bio: "Music lover. Cat person. Believer in meaningful conversations over small talk. Let's talk about dreams, books, and the universe.",
+    interests: ['music', 'cats', 'reading']
   }
+]
 
-  const onRefresh = () => {
-    setRefreshing(true)
-    loadProfiles()
-  }
+export default function DiscoverScreen({ userName, profileData, onOpenChat, onOpenSettings }) {
+  const [currentIndex, setCurrentIndex] = useState(0)
 
-  const handleLike = async (likedProfile) => {
-    onOpenChat({ id: 'demo-match' })
+  const currentProfile = demoProfiles[currentIndex]
+
+  const handleLike = () => {
+    onOpenChat({ id: currentProfile.id, name: currentProfile.name })
   }
 
   const handlePass = () => {
-    // Just move to next (in demo, cycle back)
+    setCurrentIndex((currentIndex + 1) % demoProfiles.length)
   }
 
-  const currentProfile = demoProfiles[0] || profiles[0]
+  if (!currentProfile) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.logo}>VERBA</Text>
+        </View>
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>No more profiles</Text>
+          <Text style={styles.emptySubtext}>Check back later!</Text>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -49,55 +59,47 @@ export default function DiscoverScreen({ user, profile, onOpenChat, onOpenSettin
         <Text style={styles.logo}>VERBA</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {currentProfile ? (
-          <View style={styles.card}>
-            <View style={styles.photoPlaceholder}>
-              <Text style={styles.photoEmoji}>🎭</Text>
-              <Text style={styles.photoText}>Photos Hidden</Text>
-              <Text style={styles.photoSubtext}>Reveal when both agree</Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <View style={styles.photoPlaceholder}>
+            <Text style={styles.photoEmoji}>🎭</Text>
+            <Text style={styles.photoText}>Photos Hidden</Text>
+            <Text style={styles.photoSubtext}>Reveal when both agree</Text>
+          </View>
+
+          <View style={styles.cardContent}>
+            <Text style={styles.name}>{currentProfile.name}, {currentProfile.age}</Text>
+            
+            <View style={styles.prompt}>
+              <Text style={styles.promptLabel}>HER STORY</Text>
+              <Text style={styles.story}>{currentProfile.bio}</Text>
             </View>
 
-            <View style={styles.cardContent}>
-              <Text style={styles.name}>{currentProfile.display_name}, {currentProfile.age}</Text>
+            {currentProfile.interests && (
+              <View style={styles.tags}>
+                {currentProfile.interests.map((tag, i) => (
+                  <View key={i} style={styles.tag}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.actions}>
+              <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
+                <Text style={styles.passIcon}>✌️</Text>
+              </TouchableOpacity>
               
-              <View style={styles.prompt}>
-                <Text style={styles.promptLabel}>MY STORY</Text>
-                <Text style={styles.story}>{currentProfile.bio}</Text>
-              </View>
-
-              {currentProfile.interests && (
-                <View style={styles.tags}>
-                  {currentProfile.interests.map((tag, i) => (
-                    <View key={i} style={styles.tag}>
-                      <Text style={styles.tagText}>{tag}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-
-              <View style={styles.actions}>
-                <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                  <Text style={styles.passIcon}>✌️</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.likeBtn} onPress={() => handleLike(currentProfile)}>
-                  <Text style={styles.likeIcon}>♥</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
+                <Text style={styles.likeIcon}>♥</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        ) : (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No more profiles</Text>
-            <Text style={styles.emptySubtext}>Check back later!</Text>
-          </View>
-        )}
+        </View>
+
+        <View style={styles.queueInfo}>
+          <Text style={styles.queueText}>+{demoProfiles.length - currentIndex - 1} more in queue</Text>
+        </View>
       </ScrollView>
 
       <View style={styles.bottomNav}>
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Space Mono',
     fontSize: 20,
     fontWeight: 'bold',
+    letterSpacing: 2,
   },
   content: {
     padding: 16,
@@ -241,11 +244,19 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#fff',
   },
+  queueInfo: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  queueText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#999',
+  },
   empty: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 100,
   },
   emptyText: {
     fontFamily: 'Cormorant Garamond',

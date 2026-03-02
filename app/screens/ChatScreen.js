@@ -14,7 +14,7 @@ const demoMessages = [
   { id: '3', content: "I've always been drawn to places with meaning. You?", sender: 'them', created_at: new Date(Date.now() - 900000) },
 ]
 
-export default function ChatScreen({ match, profile, onBack }) {
+export default function ChatScreen({ userName, onBack }) {
   const [messages, setMessages] = useState(demoMessages)
   const [newMessage, setNewMessage] = useState('')
 
@@ -66,7 +66,10 @@ export default function ChatScreen({ match, profile, onBack }) {
             styles.message,
             item.sender === 'me' ? styles.myMessage : styles.theirMessage
           ]}>
-            <Text style={styles.messageText}>{item.content}</Text>
+            <Text style={[
+              styles.messageText,
+              item.sender === 'me' && styles.myMessageText
+            ]}>{item.content}</Text>
           </View>
         )}
         contentContainerStyle={styles.messageList}
@@ -168,6 +171,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     color: '#1a1a1a',
+  },
+  myMessageText: {
+    color: '#fff',
   },
   inputContainer: {
     flexDirection: 'row',

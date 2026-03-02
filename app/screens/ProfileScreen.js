@@ -1,104 +1,78 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native'
-import { createProfile } from '../lib/supabase'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
-export default function ProfileScreen({ user, onComplete }) {
-  const [username, setUsername] = useState('')
-  const [displayName, setDisplayName] = useState('')
+export default function ProfileScreen({ userName, quizData, onComplete }) {
   const [age, setAge] = useState('')
   const [bio, setBio] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [interests, setInterests] = useState('')
 
-  const handleComplete = async () => {
-    if (!username || !displayName || !age || !bio) {
-      Alert.alert('Missing fields', 'Please fill in all fields')
-      return
+  const handleComplete = () => {
+    if (!age || !bio) return
+    
+    const profileData = {
+      name: userName,
+      age: parseInt(age),
+      bio: bio,
+      interests: interests.split(',').map(i => i.trim()).filter(i => i)
     }
-
-    if (parseInt(age) < 18) {
-      Alert.alert('Age requirement', 'You must be 18+ to use Verba')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const { data, error } = await createProfile(
-        user.id,
-        username,
-        displayName,
-        parseInt(age),
-        bio,
-        {},
-        []
-      )
-
-      if (error) {
-        Alert.alert('Error', error.message)
-      } else {
-        onComplete({ username, displayName, age, bio })
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong')
-    }
-    setLoading(false)
+    
+    onComplete(profileData)
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Your Story</Text>
-      <Text style={styles.subtitle}>Let words introduce you</Text>
+      <View style={styles.header}>
+        <Text style={styles.greeting}>Hey {userName}! 👋</Text>
+        <Text style={styles.title}>Tell us about yourself</Text>
+      </View>
 
       <View style={styles.form}>
-        <Text style={styles.label}>USERNAME</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Choose a username"
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-          placeholderTextColor="#999"
-        />
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>AGE</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Your age"
+            placeholderTextColor="#bbb"
+            value={age}
+            onChangeText={setAge}
+            keyboardType="numeric"
+            maxLength={2}
+          />
+        </View>
 
-        <Text style={styles.label}>DISPLAY NAME</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="What should we call you?"
-          value={displayName}
-          onChangeText={setDisplayName}
-          placeholderTextColor="#999"
-        />
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>YOUR STORY</Text>
+          <Text style={styles.inputHint}>Write something about yourself...</Text>
+          <TextInput
+            style={[styles.input, styles.bioInput]}
+            placeholder="I believe in slow mornings, handwritten letters, and conversations that go deep..."
+            placeholderTextColor="#bbb"
+            value={bio}
+            onChangeText={setBio}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
+        </View>
 
-        <Text style={styles.label}>AGE</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Your age"
-          value={age}
-          onChangeText={setAge}
-          keyboardType="numeric"
-          maxLength={2}
-          placeholderTextColor="#999"
-        />
-
-        <Text style={styles.label}>YOUR STORY</Text>
-        <TextInput
-          style={[styles.input, styles.bioInput]}
-          placeholder="Write something about yourself... Your story, your thoughts, what makes you unique. No photos needed - let your words speak."
-          value={bio}
-          onChangeText={setBio}
-          multiline
-          numberOfLines={6}
-          textAlignVertical="top"
-          placeholderTextColor="#999"
-        />
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>INTERESTS</Text>
+          <Text style={styles.inputHint}>Separate with commas</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="books, coffee, writing, walking..."
+            placeholderTextColor="#bbb"
+            value={interests}
+            onChangeText={setInterests}
+          />
+        </View>
 
         <TouchableOpacity 
-          style={styles.button}
+          style={[styles.button, (!age || !bio) && styles.buttonDisabled]}
           onPress={handleComplete}
-          disabled={loading}
+          disabled={!age || !bio}
         >
-          <Text style={styles.buttonText}>
-            {loading ? 'CREATING...' : 'CREATE PROFILE'}
-          </Text>
+          <Text style={styles.buttonText}>START DISCOVERING</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -114,55 +88,73 @@ const styles = StyleSheet.create({
     padding: 30,
     paddingTop: 50,
   },
-  title: {
-    fontFamily: 'Space Mono',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontFamily: 'Cormorant Garamond',
-    fontSize: 18,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    color: '#666',
+  header: {
     marginBottom: 30,
   },
-  form: {
-    gap: 8,
+  greeting: {
+    fontFamily: 'Space Mono',
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 8,
   },
-  label: {
+  title: {
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 28,
+    fontStyle: 'italic',
+    color: '#1a1a1a',
+  },
+  form: {
+    gap: 20,
+  },
+  inputGroup: {
+    marginBottom: 8,
+  },
+  inputLabel: {
     fontFamily: 'Space Mono',
     fontSize: 9,
     letterSpacing: 1,
     color: '#999',
-    marginBottom: 4,
-    marginTop: 12,
+    marginBottom: 8,
+  },
+  inputHint: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#bbb',
+    marginBottom: 8,
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 16,
-    fontSize: 16,
+    fontFamily: 'Space Mono',
+    fontSize: 14,
+    color: '#1a1a1a',
     borderWidth: 1,
     borderColor: '#eee',
   },
   bioInput: {
     height: 150,
     textAlignVertical: 'top',
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 16,
+    fontStyle: 'italic',
+    lineHeight: 24,
   },
   button: {
     backgroundColor: '#1a1a1a',
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 18,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.4,
   },
   buttonText: {
     fontFamily: 'Space Mono',
-    fontSize: 10,
+    fontSize: 11,
     letterSpacing: 3,
     color: '#fff',
+    fontWeight: 'bold',
   },
 })

@@ -1,137 +1,70 @@
-import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native'
-import { supabase, getCurrentUser, signIn, signUp, signOut } from './lib/supabase'
+import React, { useState } from 'react'
+import { StyleSheet, View } from 'react-native'
 
-// Screens (we'll update these next)
+// Screens
 import SplashScreen from './screens/SplashScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
 import QuizScreen from './screens/QuizScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import DiscoverScreen from './screens/DiscoverScreen'
 import ChatScreen from './screens/ChatScreen'
-import MatchScreen from './screens/MatchScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
 export default function App() {
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [currentScreen, setCurrentScreen] = useState('splash')
-  const [userProfile, setUserProfile] = useState(null)
+  const [userName, setUserName] = useState('')
+  const [quizData, setQuizData] = useState({})
+  const [profileData, setProfileData] = useState({})
 
-  useEffect(() => {
-    // Check active session
-    getCurrentUser().then(({ user }) => {
-      setSession(user)
-      if (user) {
-        checkProfile(user.id)
-      } else {
-        setLoading(false)
-        setCurrentScreen('onboarding')
-      }
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (!session) {
-        setCurrentScreen('onboarding')
-        setUserProfile(null)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const checkProfile = async (userId) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .single()
-
-    setUserProfile(data)
-    setLoading(false)
-    
-    if (data) {
-      setCurrentScreen('discover')
-    } else {
-      setCurrentScreen('quiz')
-    }
-  }
-
-  const handleSignUp = async (email, password) => {
-    const { data, error } = await signUp(email, password)
-    if (error) {
-      alert(error.message)
-      return false
-    }
-    setSession(data.user)
+  const handleOnboardingComplete = (name) => {
+    setUserName(name)
     setCurrentScreen('quiz')
-    return true
   }
 
-  const handleSignIn = async (email, password) => {
-    const { data, error } = await signIn(email, password)
-    if (error) {
-      alert(error.message)
-      return false
-    }
-    setSession(data.user)
-    return true
-  }
-
-  const handleSignOut = async () => {
-    await signOut()
-    setSession(null)
-    setUserProfile(null)
-    setCurrentScreen('onboarding')
-  }
-
-  const completeQuiz = (quizData) => {
+  const handleQuizComplete = (data) => {
+    setQuizData(data)
     setCurrentScreen('profile')
   }
 
-  const completeProfile = (profileData) => {
+  const handleProfileComplete = (data) => {
+    setProfileData(data)
     setCurrentScreen('discover')
-  }
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#6B4EFF" />
-      </View>
-    )
   }
 
   // Navigation
   switch (currentScreen) {
     case 'splash':
-      return <SplashScreen onFinish={() => setCurrentScreen('onboarding')} />
+      return (
+        <SplashScreen onFinish={() => setCurrentScreen('onboarding')} />
+      )
     
     case 'onboarding':
       return (
-        <OnboardingScreen
-          onSignUp={handleSignUp}
-          onSignIn={handleSignIn}
-        />
+        <OnboardingScreen onComplete={handleOnboardingComplete} />
       )
     
     case 'quiz':
-      return <QuizScreen onComplete={completeQuiz} />
+      return (
+        <QuizScreen 
+          userName={userName}
+          onComplete={handleQuizComplete} 
+        />
+      )
     
     case 'profile':
       return (
-        <ProfileScreen
-          user={session}
-          onComplete={completeProfile}
+        <ProfileScreen 
+          userName={userName}
+          quizData={quizData}
+          onComplete={handleProfileComplete}
         />
       )
     
     case 'discover':
       return (
         <DiscoverScreen
-          user={session}
-          profile={userProfile}
+          userName={userName}
+          profileData={profileData}
           onOpenChat={(match) => setCurrentScreen('chat')}
           onOpenSettings={() => setCurrentScreen('settings')}
         />
@@ -140,8 +73,7 @@ export default function App() {
     case 'chat':
       return (
         <ChatScreen
-          match={null}
-          profile={userProfile}
+          userName={userName}
           onBack={() => setCurrentScreen('discover')}
         />
       )
@@ -149,22 +81,28 @@ export default function App() {
     case 'settings':
       return (
         <SettingsScreen
-          profile={userProfile}
-          onSignOut={handleSignOut}
+          userName={userName}
+          profileData={profileData}
           onBack={() => setCurrentScreen('discover')}
+          onSignOut={() => {
+            setUserName('')
+            setQuizData({})
+            setProfileData({})
+            setCurrentScreen('onboarding')
+          }}
         />
       )
     
     default:
-      return <OnboardingScreen onSignUp={handleSignUp} onSignIn={handleSignIn} />
+      return (
+        <View style={styles.container} />
+      )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#faf9f7',
   },
 })
