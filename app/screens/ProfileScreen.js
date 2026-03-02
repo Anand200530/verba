@@ -47,15 +47,16 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
   const handlePromptAnswer = (answer) => {
     const newAnswers = { ...promptAnswers, [currentPromptIndex]: answer }
     setPromptAnswers(newAnswers)
+  }
+
+  const handleNextPrompt = () => {
     if (currentPromptIndex < writingPrompts.length - 1) {
       setCurrentPromptIndex(currentPromptIndex + 1)
     }
   }
 
   const handleSkipPrompt = () => {
-    if (currentPromptIndex < writingPrompts.length - 1) {
-      setCurrentPromptIndex(currentPromptIndex + 1)
-    }
+    handleNextPrompt()
   }
 
   const handleFinish = () => {
@@ -86,16 +87,30 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
           <View style={styles.promptCard}>
             <Text style={styles.promptNumber}>{currentPromptIndex + 1} / {writingPrompts.length}</Text>
             <Text style={styles.promptText}>{currentPrompt.prompt}</Text>
-            <TextInput style={styles.promptInput} placeholder="Write your answer..." placeholderTextColor="#bbb" value={currentAnswer} onChangeText={(text) => handlePromptAnswer(text)} multiline numberOfLines={4} textAlignVertical="top" />
+            <TextInput 
+              style={styles.promptInput} 
+              placeholder="Write your answer..." 
+              placeholderTextColor="#bbb" 
+              value={currentAnswer} 
+              onChangeText={handlePromptAnswer} 
+              multiline 
+              numberOfLines={4} 
+              textAlignVertical="top" 
+            />
           </View>
           <View style={styles.promptActions}>
             <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
               <Text style={styles.skipBtnText}>Skip</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.nextPromptBtn} onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}>
-              <Text style={styles.nextPromptBtnText}>{currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}</Text>
+            <TouchableOpacity style={styles.nextPromptBtn} onPress={handleNextPrompt}>
+              <Text style={styles.nextPromptBtnText}>Next</Text>
             </TouchableOpacity>
           </View>
+          {currentPromptIndex === writingPrompts.length - 1 && (
+            <TouchableOpacity style={styles.finishBtn} onPress={handleFinish}>
+              <Text style={styles.finishBtnText}>Finish</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       </View>
     )
@@ -177,4 +192,6 @@ const styles = StyleSheet.create({
   skipBtnText: { fontFamily: 'Space Mono', fontSize: 12, color: '#999' },
   nextPromptBtn: { backgroundColor: '#1a1a1a', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 24 },
   nextPromptBtnText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 2, color: '#fff', fontWeight: 'bold' },
+  finishBtn: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center' },
+  finishBtnText: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
 })
