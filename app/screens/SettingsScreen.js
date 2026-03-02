@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Switch, Alert } from 'react-native'
 
-export default function SettingsScreen({ userName, profileData, onBack, onSignOut }) {
-  const [ghostMode, setGhostMode] = useState(true)
+export default function SettingsScreen({ userData, settings, onSettingsChange, onBack, onSignOut }) {
+  const [ghostMode, setGhostMode] = useState(settings?.ghostMode ?? true)
+
+  const handleGhostModeChange = (value) => {
+    setGhostMode(value)
+    onSettingsChange({ ...settings, ghostMode: value })
+  }
 
   const handleSignOut = () => {
     Alert.alert(
@@ -29,7 +34,7 @@ export default function SettingsScreen({ userName, profileData, onBack, onSignOu
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>🎭</Text>
         </View>
-        <Text style={styles.profileName}>{userName}</Text>
+        <Text style={styles.profileName}>{userData?.name || 'User'}</Text>
         <Text style={styles.profileStatus}>Photos hidden</Text>
       </View>
 
@@ -43,7 +48,7 @@ export default function SettingsScreen({ userName, profileData, onBack, onSignOu
           </View>
           <Switch
             value={ghostMode}
-            onValueChange={setGhostMode}
+            onValueChange={handleGhostModeChange}
             trackColor={{ false: '#ddd', true: '#1a1a1a' }}
           />
         </View>

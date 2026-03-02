@@ -47,12 +47,16 @@ export default function QuizScreen({ userName, onComplete }) {
     }
   }
 
+  const handleSkip = () => {
+    onComplete({ skipped: true })
+  }
+
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => onComplete({})} style={styles.skipBtn}>
+        <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
           <Text style={styles.skipText}>SKIP</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{userName}'s Quiz</Text>

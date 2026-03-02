@@ -26,7 +26,7 @@ const demoProfiles = [
   }
 ]
 
-export default function DiscoverScreen({ userName, profileData, onOpenChat, onOpenSettings }) {
+export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings }) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const currentProfile = demoProfiles[currentIndex]
@@ -105,7 +105,7 @@ export default function DiscoverScreen({ userName, profileData, onOpenChat, onOp
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>🔥</Text>
-          <Text style={styles.navLabel}>Discover</Text>
+          <Text style={styles.navLabelActive}>Discover</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
           <Text style={styles.navIcon}>⚙️</Text>
@@ -288,6 +288,12 @@ const styles = StyleSheet.create({
   navIcon: {
     fontSize: 22,
     marginBottom: 4,
+  },
+  navLabelActive: {
+    fontFamily: 'Space Mono',
+    fontSize: 9,
+    color: '#1a1a1a',
+    fontWeight: 'bold',
   },
   navLabel: {
     fontFamily: 'Space Mono',

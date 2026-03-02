@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
-export default function ProfileScreen({ userName, quizData, onComplete }) {
+export default function ProfileScreen({ userName, onComplete }) {
   const [age, setAge] = useState('')
   const [bio, setBio] = useState('')
   const [interests, setInterests] = useState('')

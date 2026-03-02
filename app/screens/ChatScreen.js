@@ -14,7 +14,7 @@ const demoMessages = [
   { id: '3', content: "I've always been drawn to places with meaning. You?", sender: 'them', created_at: new Date(Date.now() - 900000) },
 ]
 
-export default function ChatScreen({ userName, onBack }) {
+export default function ChatScreen({ userData, onBack }) {
   const [messages, setMessages] = useState(demoMessages)
   const [newMessage, setNewMessage] = useState('')
 
