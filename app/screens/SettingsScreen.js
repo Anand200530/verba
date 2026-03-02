@@ -24,7 +24,7 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack}>
-          <Text style={styles.back}>←</Text>
+          <Text style={styles.back}>-</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.placeholder} />
@@ -32,7 +32,7 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
 
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>🎭</Text>
+          <Text style={styles.avatarText}>V</Text>
         </View>
         <Text style={styles.profileName}>{userData?.name || 'User'}</Text>
         <Text style={styles.profileStatus}>Photos hidden</Text>
@@ -43,8 +43,8 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
         
         <View style={styles.setting}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>👻 Ghost Mode</Text>
-            <Text style={styles.settingDesc}>Hide online status & last seen</Text>
+            <Text style={styles.settingLabel}>Ghost Mode</Text>
+            <Text style={styles.settingDesc}>Hide online status and last seen</Text>
           </View>
           <Switch
             value={ghostMode}
@@ -59,17 +59,17 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Edit Story</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={styles.menuArrow}>-</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Interests</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={styles.menuArrow}>-</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Photo Settings</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={styles.menuArrow}>-</Text>
         </TouchableOpacity>
       </View>
 
@@ -78,12 +78,12 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>How It Works</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={styles.menuArrow}>-</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Privacy Policy</Text>
-          <Text style={styles.menuArrow}>→</Text>
+          <Text style={styles.menuArrow}>-</Text>
         </TouchableOpacity>
       </View>
 
@@ -97,123 +97,26 @@ export default function SettingsScreen({ userData, settings, onSettingsChange, o
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#faf9f7',
-    paddingTop: 50,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  back: {
-    fontSize: 24,
-  },
-  title: {
-    fontFamily: 'Space Mono',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  placeholder: {
-    width: 24,
-  },
-  profileCard: {
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingVertical: 30,
-    borderBottomWidth: 8,
-    borderBottomColor: '#f8f8f8',
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#1a1a1a',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  avatarText: {
-    fontSize: 32,
-  },
-  profileName: {
-    fontFamily: 'Space Mono',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  profileStatus: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#999',
-  },
-  section: {
-    padding: 20,
-    borderBottomWidth: 8,
-    borderBottomColor: '#f8f8f8',
-    backgroundColor: '#fff',
-  },
-  sectionTitle: {
-    fontFamily: 'Space Mono',
-    fontSize: 9,
-    letterSpacing: 1,
-    color: '#999',
-    marginBottom: 16,
-  },
-  setting: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  settingInfo: {
-    flex: 1,
-  },
-  settingLabel: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  settingDesc: {
-    fontSize: 12,
-    color: '#666',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  menuText: {
-    fontSize: 15,
-  },
-  menuArrow: {
-    fontSize: 14,
-    color: '#999',
-  },
-  signOutButton: {
-    margin: 20,
-    padding: 16,
-    backgroundColor: '#fee',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  signOutText: {
-    color: '#ff4444',
-    fontFamily: 'Space Mono',
-    fontSize: 12,
-    letterSpacing: 1,
-  },
-  version: {
-    textAlign: 'center',
-    color: '#bbb',
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    marginTop: 10,
-  },
+  container: { flex: 1, backgroundColor: '#faf9f7', paddingTop: 50 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  back: { fontSize: 24, color: '#1a1a1a' },
+  title: { fontFamily: 'Space Mono', fontSize: 14, fontWeight: 'bold' },
+  placeholder: { width: 24 },
+  profileCard: { backgroundColor: '#fff', alignItems: 'center', paddingVertical: 30, borderBottomWidth: 8, borderBottomColor: '#f8f8f8' },
+  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  avatarText: { fontFamily: 'Space Mono', fontSize: 32, color: '#fff', fontWeight: 'bold' },
+  profileName: { fontFamily: 'Space Mono', fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+  profileStatus: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
+  section: { padding: 20, borderBottomWidth: 8, borderBottomColor: '#f8f8f8', backgroundColor: '#fff' },
+  sectionTitle: { fontFamily: 'Space Mono', fontSize: 9, letterSpacing: 1, color: '#999', marginBottom: 16 },
+  setting: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  settingInfo: { flex: 1 },
+  settingLabel: { fontSize: 16, marginBottom: 4 },
+  settingDesc: { fontSize: 12, color: '#666' },
+  menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  menuText: { fontSize: 15 },
+  menuArrow: { fontSize: 14, color: '#999' },
+  signOutButton: { margin: 20, padding: 16, backgroundColor: '#fee', borderRadius: 8, alignItems: 'center' },
+  signOutText: { color: '#ff4444', fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 1 },
+  version: { textAlign: 'center', color: '#bbb', fontFamily: 'Space Mono', fontSize: 10, marginTop: 10 },
 })

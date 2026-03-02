@@ -10,23 +10,20 @@ const onboardingSlides = [
   { 
     text: "What you say matters, not how you look", 
     subtext: "Connect through words, not appearances",
-    icon: "✍️"
   },
   { 
     text: "Your story is your introduction", 
     subtext: "Let your writing speak for you",
-    icon: "📖"
   },
   { 
     text: "Photos reveal only when both agree", 
     subtext: "True connection comes from within",
-    icon: "🎭"
   },
 ]
 
 const genderOptions = [
-  { id: 'woman', label: 'Woman', emoji: '👩' },
-  { id: 'man', label: 'Man', emoji: '👨' },
+  { id: 'woman', label: 'Woman' },
+  { id: 'man', label: 'Man' },
 ]
 
 const orientationOptions = [
@@ -88,7 +85,7 @@ export default function OnboardingScreen({ onComplete }) {
           {onboardingSlides.map((slide, index) => (
             <View key={index} style={styles.slide}>
               <View style={styles.slideIconContainer}>
-                <Text style={styles.slideIcon}>{slide.icon}</Text>
+                <Text style={styles.slideIcon}>{index + 1}</Text>
               </View>
               <Text style={styles.slideText}>{slide.text}</Text>
               <Text style={styles.slideSubtext}>{slide.subtext}</Text>
@@ -135,12 +132,12 @@ export default function OnboardingScreen({ onComplete }) {
       <View style={styles.container}>
         <View style={styles.formHeader}>
           <TouchableOpacity onPress={() => setScreen('onboarding')}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.formContent}>
           <Text style={styles.formTitle}>What should we call you?</Text>
-          <Text style={styles.formSubtitle}>This is how you'll appear to others</Text>
+          <Text style={styles.formSubtitle}>This is how you will appear to others</Text>
 
           <TextInput
             style={styles.nameInput}
@@ -169,7 +166,7 @@ export default function OnboardingScreen({ onComplete }) {
       <View style={styles.container}>
         <View style={styles.formHeader}>
           <TouchableOpacity onPress={() => setScreen('name')}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.formContent}>
@@ -208,7 +205,7 @@ export default function OnboardingScreen({ onComplete }) {
       <View style={styles.container}>
         <View style={styles.formHeader}>
           <TouchableOpacity onPress={() => setScreen('age')}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={styles.formContent}>
@@ -222,7 +219,6 @@ export default function OnboardingScreen({ onComplete }) {
                 style={[styles.optionCard, gender === option.id && styles.optionCardSelected]}
                 onPress={() => setGender(option.id)}
               >
-                <Text style={styles.optionEmoji}>{option.emoji}</Text>
                 <Text style={[styles.optionLabel, gender === option.id && styles.optionLabelSelected]}>
                   {option.label}
                 </Text>
@@ -247,12 +243,12 @@ export default function OnboardingScreen({ onComplete }) {
       <View style={styles.container}>
         <View style={styles.formHeader}>
           <TouchableOpacity onPress={() => setScreen('gender')}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={styles.formContent}>
           <Text style={styles.formTitle}>Interested in...</Text>
-          <Text style={styles.formSubtitle}>We'll show you compatible matches</Text>
+          <Text style={styles.formSubtitle}>We will show you compatible matches</Text>
 
           <View style={styles.orientationList}>
             {orientationOptions.map((option) => (
@@ -270,7 +266,7 @@ export default function OnboardingScreen({ onComplete }) {
                   )}
                 </View>
                 {orientation === option.id && (
-                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={styles.checkmark}>-</Text>
                 )}
               </TouchableOpacity>
             ))}
@@ -298,9 +294,9 @@ const styles = StyleSheet.create({
   tagline: { fontFamily: 'Space Mono', fontSize: 8, letterSpacing: 5, color: '#ccc', marginTop: 8 },
   slideScroll: { flex: 1 },
   slide: { width, paddingHorizontal: 40, alignItems: 'center', justifyContent: 'center' },
-  slideIconContainer: { width: 120, height: 120, borderRadius: 60, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', marginBottom: 30, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 20 },
-  slideIcon: { fontSize: 48 },
-  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 28, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 38, marginBottom: 12 },
+  slideIconContainer: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 30 },
+  slideIcon: { fontFamily: 'Space Mono', fontSize: 28, color: '#fff', fontWeight: 'bold' },
+  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 26, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 36, marginBottom: 12 },
   slideSubtext: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', textAlign: 'center' },
   dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1a1a1a', marginHorizontal: 4 },
@@ -321,8 +317,7 @@ const styles = StyleSheet.create({
   optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginBottom: 30 },
   optionCard: { width: '45%', backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', borderWidth: 2, borderColor: '#eee' },
   optionCardSelected: { borderColor: '#1a1a1a', backgroundColor: '#1a1a1a' },
-  optionEmoji: { fontSize: 32, marginBottom: 8 },
-  optionLabel: { fontFamily: 'Space Mono', fontSize: 11, color: '#1a1a1a' },
+  optionLabel: { fontFamily: 'Space Mono', fontSize: 14, color: '#1a1a1a' },
   optionLabelSelected: { color: '#fff' },
   
   orientationList: { gap: 10, marginBottom: 30 },

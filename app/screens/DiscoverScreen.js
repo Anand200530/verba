@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
-// Demo profiles with prompts
 const demoProfiles = [
   {
     id: '1',
@@ -37,22 +36,15 @@ const demoProfiles = [
   }
 ]
 
-const writingPrompts = [
-  "What's a small thing that makes you happy?",
-  "If you could have dinner with anyone, who would it be?",
-  "What's something you're passionate about?",
-]
-
 export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings }) {
   const [currentIndex, setCurrentIndex] = useState(0)
-
   const currentProfile = demoProfiles[currentIndex]
 
   const getWritingStyleLabel = (style) => {
     switch(style) {
-      case 'casual': return 'Casual Writer'
-      case 'friendly': return 'Friendly Writer'
-      case 'thoughtful': return 'Thoughtful Writer'
+      case 'casual': return 'Casual'
+      case 'friendly': return 'Friendly'
+      case 'thoughtful': return 'Thoughtful'
       default: return 'Writer'
     }
   }
@@ -74,7 +66,9 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <View style={styles.photoPlaceholder}>
-            <Text style={styles.photoEmoji}>🎭</Text>
+            <View style={styles.placeholderIcon}>
+              <Text style={styles.placeholderText}>V</Text>
+            </View>
             <Text style={styles.photoText}>Photos Hidden</Text>
             <Text style={styles.photoSubtext}>Reveal when both agree</Text>
           </View>
@@ -93,16 +87,13 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
                 <Text style={styles.story}>{currentProfile.bio}</Text>
               </View>
 
-              {/* Show prompt answers */}
               {currentProfile.promptAnswers && (
-                <>
-                  <View style={styles.prompt}>
-                    <Text style={styles.promptLabel}>QUICK Q'S</Text>
-                    {Object.values(currentProfile.promptAnswers).slice(0, 2).map((answer, i) => (
-                      <Text key={i} style={styles.promptAnswer}>• {answer}</Text>
-                    ))}
-                  </View>
-                </>
+                <View style={styles.prompt}>
+                  <Text style={styles.promptLabel}>QUICK Q</Text>
+                  {Object.values(currentProfile.promptAnswers).slice(0, 2).map((answer, i) => (
+                    <Text key={i} style={styles.promptAnswer}>{answer}</Text>
+                  ))}
+                </View>
               )}
             </View>
 
@@ -118,11 +109,11 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <Text style={styles.passIcon}>✌️</Text>
+                <Text style={styles.passIcon}>-</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <Text style={styles.likeIcon}>♥</Text>
+                <Text style={styles.likeIcon}>+</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -135,11 +126,11 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🔥</Text>
+          <Text style={styles.navIcon}>D</Text>
           <Text style={styles.navLabelActive}>Discover</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
-          <Text style={styles.navIcon}>⚙️</Text>
+          <Text style={styles.navIcon}>S</Text>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
       </View>
@@ -154,7 +145,8 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 100 },
   card: { backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 20 },
   photoPlaceholder: { height: 280, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  photoEmoji: { fontSize: 48, marginBottom: 8 },
+  placeholderIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#333', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  placeholderText: { fontFamily: 'Space Mono', fontSize: 24, color: '#fff', fontWeight: 'bold' },
   photoText: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
   photoSubtext: { fontFamily: 'Space Mono', fontSize: 10, color: '#666', marginTop: 4 },
   cardContent: { padding: 24 },
@@ -172,14 +164,14 @@ const styles = StyleSheet.create({
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingTop: 8 },
   passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
-  passIcon: { fontSize: 28 },
+  passIcon: { fontSize: 32, color: '#999' },
   likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  likeIcon: { fontSize: 28, color: '#fff' },
+  likeIcon: { fontSize: 32, color: '#fff', fontWeight: '300' },
   queueInfo: { alignItems: 'center', marginTop: 16 },
   queueText: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
-  navIcon: { fontSize: 22, marginBottom: 4 },
+  navIcon: { fontFamily: 'Space Mono', fontSize: 18, marginBottom: 4, fontWeight: 'bold' },
   navLabelActive: { fontFamily: 'Space Mono', fontSize: 9, color: '#1a1a1a', fontWeight: 'bold' },
   navLabel: { fontFamily: 'Space Mono', fontSize: 9, color: '#bbb' },
 })

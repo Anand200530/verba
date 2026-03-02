@@ -2,31 +2,18 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
 const writingPrompts = [
-  {
-    id: 1,
-    prompt: "What's a small thing that makes you happy?",
-    placeholder: "Warm coffee on a rainy day..."
-  },
-  {
-    id: 2,
-    prompt: "If you could have dinner with anyone, who would it be?",
-    placeholder: "A historical figure, celebrity, or someone from your life..."
-  },
-  {
-    id: 3,
-    prompt: "What's something you're passionate about?",
-    placeholder: "It could be anything - a hobby, cause, or idea..."
-  },
+  { id: 1, prompt: "What's a small thing that makes you happy?" },
+  { id: 2, prompt: "If you could have dinner with anyone, who would it be?" },
+  { id: 3, prompt: "What's something you're passionate about?" },
 ]
 
 export default function ProfileScreen({ userData, onComplete }) {
-  const [screen, setScreen] = useState('bio') // 'bio' | 'prompts'
+  const [screen, setScreen] = useState('bio')
   const [bio, setBio] = useState('')
   const [interests, setInterests] = useState('')
   const [promptAnswers, setPromptAnswers] = useState({})
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
 
-  // Analyze writing style based on bio length
   const analyzeWritingStyle = (text) => {
     const words = text.trim().split(/\s+/).length
     if (words < 20) return 'casual'
@@ -42,7 +29,6 @@ export default function ProfileScreen({ userData, onComplete }) {
   const handlePromptAnswer = (answer) => {
     const newAnswers = { ...promptAnswers, [currentPromptIndex]: answer }
     setPromptAnswers(newAnswers)
-
     if (currentPromptIndex < writingPrompts.length - 1) {
       setCurrentPromptIndex(currentPromptIndex + 1)
     }
@@ -56,7 +42,6 @@ export default function ProfileScreen({ userData, onComplete }) {
 
   const handleFinish = () => {
     const writingStyle = analyzeWritingStyle(bio)
-    
     const profileData = {
       bio: bio,
       interests: interests.split(',').map(i => i.trim()).filter(i => i),
@@ -66,7 +51,6 @@ export default function ProfileScreen({ userData, onComplete }) {
     onComplete(profileData)
   }
 
-  // Writing Prompts Screen
   if (screen === 'prompts') {
     const currentPrompt = writingPrompts[currentPromptIndex]
     const currentAnswer = promptAnswers[currentPromptIndex] || ''
@@ -74,7 +58,7 @@ export default function ProfileScreen({ userData, onComplete }) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Now for the fun part! 🎭</Text>
+          <Text style={styles.greeting}>Now for the fun part</Text>
           <Text style={styles.title}>Answer a few prompts</Text>
           <Text style={styles.subtitle}>These help your matches know the real you</Text>
         </View>
@@ -87,7 +71,7 @@ export default function ProfileScreen({ userData, onComplete }) {
           
           <TextInput
             style={styles.promptInput}
-            placeholder={currentPrompt.placeholder}
+            placeholder="Write your answer here..."
             placeholderTextColor="#bbb"
             value={currentAnswer}
             onChangeText={(text) => handlePromptAnswer(text)}
@@ -98,46 +82,30 @@ export default function ProfileScreen({ userData, onComplete }) {
         </View>
 
         <View style={styles.promptActions}>
-          <TouchableOpacity 
-            style={styles.skipBtn}
-            onPress={handleSkipPrompt}
-          >
+          <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
             <Text style={styles.skipBtnText}>Skip this one</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.nextPromptBtn}
-            onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}
-          >
+          <TouchableOpacity style={styles.nextPromptBtn} onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}>
             <Text style={styles.nextPromptBtnText}>
-              {currentPromptIndex === writingPrompts.length - 1 
-                ? (currentAnswer.trim() ? 'Finish' : 'Skip All') 
-                : 'Next'}
+              {currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.promptDots}>
           {writingPrompts.map((_, i) => (
-            <View 
-              key={i} 
-              style={[
-                styles.promptDot,
-                i === currentPromptIndex && styles.promptDotActive,
-                promptAnswers[i] && styles.promptDotAnswered
-              ]} 
-            />
+            <View key={i} style={[styles.promptDot, i === currentPromptIndex && styles.promptDotActive, promptAnswers[i] && styles.promptDotAnswered]} />
           ))}
         </View>
       </ScrollView>
     )
   }
 
-  // Bio Screen
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hey {userData?.name}! 👋</Text>
+        <Text style={styles.greeting}>Hey {userData?.name}</Text>
         <Text style={styles.title}>Tell us your story</Text>
         <Text style={styles.subtitle}>What makes you unique?</Text>
       </View>
@@ -145,10 +113,10 @@ export default function ProfileScreen({ userData, onComplete }) {
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>YOUR STORY</Text>
-          <Text style={styles.inputHint}>Write naturally - we'll analyze your writing style</Text>
+          <Text style={styles.inputHint}>Write naturally - we will analyze your writing style</Text>
           <TextInput
             style={[styles.input, styles.bioInput]}
-            placeholder="I believe in slow mornings, handwritten letters, and conversations that go deep. Coffee enthusiast. Book lover..."
+            placeholder="I believe in slow mornings, handwritten letters, and conversations that go deep..."
             placeholderTextColor="#bbb"
             value={bio}
             onChangeText={setBio}
@@ -170,11 +138,7 @@ export default function ProfileScreen({ userData, onComplete }) {
           />
         </View>
 
-        <TouchableOpacity 
-          style={[styles.button, !bio.trim() && styles.buttonDisabled]}
-          onPress={handleBioComplete}
-          disabled={!bio.trim()}
-        >
+        <TouchableOpacity style={[styles.button, !bio.trim() && styles.buttonDisabled]} onPress={handleBioComplete} disabled={!bio.trim()}>
           <Text style={styles.buttonText}>CONTINUE</Text>
         </TouchableOpacity>
       </View>
@@ -200,7 +164,6 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.4 },
   buttonText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
 
-  // Prompt Styles
   promptCard: { backgroundColor: '#fff', borderRadius: 16, padding: 24, marginBottom: 20 },
   promptNumber: { fontFamily: 'Space Mono', fontSize: 10, color: '#999', letterSpacing: 2, marginBottom: 12 },
   promptText: { fontFamily: 'Cormorant Garamond', fontSize: 22, fontStyle: 'italic', color: '#1a1a1a', marginBottom: 16, lineHeight: 30 },
