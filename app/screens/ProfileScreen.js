@@ -13,7 +13,7 @@ const presetInterests = [
   'Coffee', 'Wine', 'Pets', 'Fashion', 'Science', 'History'
 ]
 
-export default function ProfileScreen({ userData, onComplete }) {
+export default function ProfileScreen({ userData, onComplete, onBack }) {
   const [screen, setScreen] = useState('bio')
   const [bio, setBio] = useState('')
   const [selectedInterests, setSelectedInterests] = useState([])
@@ -60,13 +60,14 @@ export default function ProfileScreen({ userData, onComplete }) {
 
   const handleFinish = () => {
     const writingStyle = analyzeWritingStyle(bio)
-    const profileData = {
-      bio: bio,
-      interests: selectedInterests,
-      writingStyle,
-      promptAnswers,
-    }
+    const profileData = { bio, interests: selectedInterests, writingStyle, promptAnswers }
     onComplete(profileData)
+  }
+
+  const goBack = () => {
+    if (screen === 'interests') setScreen('bio')
+    else if (screen === 'prompts') setScreen('interests')
+    else if (onBack) onBack()
   }
 
   // Prompts Screen
@@ -75,94 +76,93 @@ export default function ProfileScreen({ userData, onComplete }) {
     const currentAnswer = promptAnswers[currentPromptIndex] || ''
 
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>One more step</Text>
-          <Text style={styles.title}>Answer prompts</Text>
-          <Text style={styles.subtitle}>These help your matches know you better</Text>
+          <TouchableOpacity onPress={handleInterestComplete}><Text style={styles.backText}>-</Text></TouchableOpacity>
+          <Text style={styles.headerTitle}>PROMPTS</Text>
+          <View style={styles.headerRight} />
         </View>
-
-        <View style={styles.promptCard}>
-          <Text style={styles.promptNumber}>{currentPromptIndex + 1} / {writingPrompts.length}</Text>
-          <Text style={styles.promptText}>{currentPrompt.prompt}</Text>
-          <TextInput style={styles.promptInput} placeholder="Write your answer..." placeholderTextColor="#bbb" value={currentAnswer} onChangeText={(text) => handlePromptAnswer(text)} multiline numberOfLines={4} textAlignVertical="top" />
-        </View>
-
-        <View style={styles.promptActions}>
-          <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
-            <Text style={styles.skipBtnText}>Skip</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.nextPromptBtn} onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}>
-            <Text style={styles.nextPromptBtnText}>{currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.promptCard}>
+            <Text style={styles.promptNumber}>{currentPromptIndex + 1} / {writingPrompts.length}</Text>
+            <Text style={styles.promptText}>{currentPrompt.prompt}</Text>
+            <TextInput style={styles.promptInput} placeholder="Write your answer..." placeholderTextColor="#bbb" value={currentAnswer} onChangeText={(text) => handlePromptAnswer(text)} multiline numberOfLines={4} textAlignVertical="top" />
+          </View>
+          <View style={styles.promptActions}>
+            <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
+              <Text style={styles.skipBtnText}>Skip</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.nextPromptBtn} onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}>
+              <Text style={styles.nextPromptBtnText}>{currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
     )
   }
 
   // Interests Screen
   if (screen === 'interests') {
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Select your interests</Text>
-          <Text style={styles.title}>What do you like?</Text>
-          <Text style={styles.subtitle}>Choose up to 5</Text>
+          <TouchableOpacity onPress={goBack}><Text style={styles.backText}>-</Text></TouchableOpacity>
+          <Text style={styles.headerTitle}>INTERESTS</Text>
+          <View style={styles.headerRight} />
         </View>
-
-        <View style={styles.interestGrid}>
-          {presetInterests.map((interest) => (
-            <TouchableOpacity key={interest} style={[styles.interestChip, selectedInterests.includes(interest) && styles.interestChipSelected]} onPress={() => toggleInterest(interest)}>
-              <Text style={[styles.interestText, selectedInterests.includes(interest) && styles.interestTextSelected]}>{interest}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleInterestComplete}>
-          <Text style={styles.buttonText}>CONTINUE</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text style={styles.interestTitle}>Select up to 5</Text>
+          <View style={styles.interestGrid}>
+            {presetInterests.map((interest) => (
+              <TouchableOpacity key={interest} style={[styles.interestChip, selectedInterests.includes(interest) && styles.interestChipSelected]} onPress={() => toggleInterest(interest)}>
+                <Text style={[styles.interestText, selectedInterests.includes(interest) && styles.interestTextSelected]}>{interest}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <TouchableOpacity style={styles.button} onPress={handleInterestComplete}>
+            <Text style={styles.buttonText}>CONTINUE</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
     )
   }
 
   // Bio Screen
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hey {userData?.name}</Text>
-        <Text style={styles.title}>Tell us your story</Text>
-        <Text style={styles.subtitle}>What makes you unique?</Text>
+        <TouchableOpacity onPress={goBack}><Text style={styles.backText}>-</Text></TouchableOpacity>
+        <Text style={styles.headerTitle}>YOUR STORY</Text>
+        <View style={styles.headerRight} />
       </View>
-
-      <View style={styles.form}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.subtitle}>What makes you unique?</Text>
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>YOUR STORY</Text>
           <TextInput style={[styles.input, styles.bioInput]} placeholder="Write something about yourself..." placeholderTextColor="#bbb" value={bio} onChangeText={setBio} multiline numberOfLines={6} textAlignVertical="top" />
         </View>
-
         <TouchableOpacity style={[styles.button, !bio.trim() && styles.buttonDisabled]} onPress={handleBioComplete} disabled={!bio.trim()}>
           <Text style={styles.buttonText}>CONTINUE</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
-  content: { padding: 30, paddingTop: 50 },
-  header: { marginBottom: 30 },
-  greeting: { fontFamily: 'Space Mono', fontSize: 14, color: '#999', marginBottom: 8 },
-  title: { fontFamily: 'Cormorant Garamond', fontSize: 32, fontStyle: 'italic', color: '#1a1a1a' },
-  subtitle: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', marginTop: 4 },
-  form: { gap: 20 },
-  inputGroup: { marginBottom: 8 },
-  inputLabel: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 1, color: '#999', marginBottom: 8 },
-  input: { backgroundColor: '#fff', borderRadius: 10, padding: 16, fontFamily: 'Space Mono', fontSize: 16, color: '#1a1a1a', borderWidth: 1, borderColor: '#eee' },
-  bioInput: { height: 150, textAlignVertical: 'top', fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic', lineHeight: 28 },
-  button: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center', marginTop: 20 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, paddingTop: 50, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  backText: { fontSize: 24, color: '#1a1a1a' },
+  headerTitle: { fontFamily: 'Space Mono', fontSize: 12, fontWeight: 'bold', color: '#1a1a1a' },
+  headerRight: { width: 24 },
+  content: { padding: 24, paddingTop: 30 },
+  subtitle: { fontFamily: 'Cormorant Garamond', fontSize: 24, fontStyle: 'italic', color: '#1a1a1a', marginBottom: 24, textAlign: 'center' },
+  inputGroup: { marginBottom: 20 },
+  input: { backgroundColor: '#fff', borderRadius: 12, padding: 16, fontFamily: 'Space Mono', fontSize: 16, color: '#1a1a1a', borderWidth: 1, borderColor: '#eee' },
+  bioInput: { height: 180, textAlignVertical: 'top', fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic', lineHeight: 28 },
+  button: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center' },
   buttonDisabled: { opacity: 0.4 },
   buttonText: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
+  interestTitle: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 20 },
   interestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 30 },
   interestChip: { backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 18, borderRadius: 20, borderWidth: 2, borderColor: '#eee' },
   interestChipSelected: { backgroundColor: '#1a1a1a', borderColor: '#1a1a1a' },

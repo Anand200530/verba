@@ -1,27 +1,15 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Dimensions, ScrollView } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
 const quizQuestions = [
-  {
-    id: 1,
-    question: "What's your ideal first date?",
-    options: ["Coffee shop chat", "Long walk", "Activity together", "Virtual movie"]
-  },
-  {
-    id: 2,
-    question: "How many conversations at once?",
-    options: ["One at a time", "A few is fine", "Keep it open"]
-  },
-  {
-    id: 3,
-    question: "What matters most in a match?",
-    options: ["Their words/story", "Their interests", "Their values", "The conversation flow"]
-  },
+  { id: 1, question: "What's your ideal first date?", options: ["Coffee shop chat", "Long walk", "Activity together", "Virtual movie"] },
+  { id: 2, question: "How many conversations at once?", options: ["One at a time", "A few is fine", "Keep it open"] },
+  { id: 3, question: "What matters most in a match?", options: ["Their words/story", "Their interests", "Their values", "The conversation flow"] },
 ]
 
-export default function QuizScreen({ userData, onComplete }) {
+export default function QuizScreen({ userData, onComplete, onBack }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
   const scrollX = new Animated.Value(0)
@@ -29,7 +17,6 @@ export default function QuizScreen({ userData, onComplete }) {
   const handleAnswer = (option) => {
     const newAnswers = { ...answers, [currentQuestion]: option }
     setAnswers(newAnswers)
-
     if (currentQuestion < quizQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
@@ -41,29 +28,29 @@ export default function QuizScreen({ userData, onComplete }) {
     onComplete({ skipped: true })
   }
 
+  const goBack = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1)
+    } else if (onBack) {
+      onBack()
+    }
+  }
+
   const progress = ((currentQuestion + 1) / quizQuestions.length) * 100
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
-          <Text style={styles.skipText}>SKIP</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{userData?.name}'s Quiz</Text>
+        <TouchableOpacity onPress={goBack}><Text style={styles.backText}>-</Text></TouchableOpacity>
+        <Text style={styles.headerTitle}>QUIZ</Text>
+        <TouchableOpacity onPress={handleSkip}><Text style={styles.skipText}>SKIP</Text></TouchableOpacity>
       </View>
 
       <View style={styles.progressContainer}>
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
       </View>
       
-      <Animated.ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
-        style={styles.questionScroll}
-      >
+      <Animated.ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} scrollEventThrottle={16} onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } }], { useNativeDriver: true })} style={styles.questionScroll}>
         {quizQuestions.map((q, index) => (
           <View key={q.id} style={styles.questionSlide}>
             <Text style={styles.questionNumber}>{index + 1} / {quizQuestions.length}</Text>
@@ -92,10 +79,10 @@ export default function QuizScreen({ userData, onComplete }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 50, paddingBottom: 10 },
-  skipBtn: { padding: 8 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 50, paddingBottom: 10, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  backText: { fontSize: 24, color: '#1a1a1a' },
+  headerTitle: { fontFamily: 'Space Mono', fontSize: 12, fontWeight: 'bold', color: '#1a1a1a' },
   skipText: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', letterSpacing: 1 },
-  headerTitle: { fontFamily: 'Space Mono', fontSize: 12, color: '#1a1a1a' },
   progressContainer: { height: 3, backgroundColor: '#eee', marginHorizontal: 20, borderRadius: 2 },
   progressBar: { height: '100%', backgroundColor: '#1a1a1a', borderRadius: 2 },
   questionScroll: { flex: 1 },
