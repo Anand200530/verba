@@ -20,19 +20,25 @@
 | Backend | Supabase (BaaS - Free) |
 | Auth | Supabase Auth |
 | Database | Supabase PostgreSQL |
-| Storage | Supabase Storage (photos) |
+
+---
+
+## Supabase Config
+
+- **URL:** `https://miqwzfetdtwxtditzczw.supabase.co`
+- **anon key:** Stored in app config
 
 ---
 
 ## MVP Plan
 
-### Phase 1: Supabase Setup
+### Phase 1: Supabase Setup ✅
 
 | Status | Step | Description |
 |--------|------|-------------|
-| ⏳ | 1 | Create Supabase account |
-| ⏳ | 2 | Create new project |
-| ⏳ | 3 | Setup database tables |
+| ✅ | 1 | Create Supabase account |
+| ✅ | 2 | Create new project |
+| ✅ | 3 | Setup database tables (profiles, matches, messages) |
 | ⏳ | 4 | Configure auth |
 | ⏳ | 5 | Setup storage for photos |
 
@@ -40,12 +46,15 @@
 
 | Status | Step | Description |
 |--------|------|-------------|
-| ⏳ | 1 | Connect to Supabase |
-| ⏳ | 2 | Quiz flow |
-| ⏳ | 3 | Profile creation |
-| ⏳ | 4 | Discover screen (no photos) |
-| ⏳ | 5 | Chat with blur |
-| ⏳ | 6 | Settings (ghost mode) |
+| ⏳ | 1 | Install Supabase SDK |
+| ⏳ | 2 | Connect to Supabase |
+| ⏳ | 3 | Auth flow (signup/login) |
+| ⏳ | 4 | Quiz flow |
+| ⏳ | 5 | Profile creation |
+| ⏳ | 6 | Discover screen (no photos) |
+| ⏳ | 7 | Matching system |
+| ⏳ | 8 | Chat with blur |
+| ⏳ | 9 | Settings (ghost mode) |
 
 ### Phase 3: Polish
 
@@ -64,13 +73,15 @@
 - Initial commit with mobile app skeleton (8 screens)
 - Project plan documented
 - Decided on Supabase for backend (free tier)
+- Database tables created (profiles, matches, messages)
+- Started building mobile app
 
 ---
 
 ## Notes
 
 - Using Supabase (BaaS) instead of custom backend — free and no server management
-- 
+- Database is ready — now building mobile app
 
 ---
 
