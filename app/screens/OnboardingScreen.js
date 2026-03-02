@@ -84,9 +84,6 @@ export default function OnboardingScreen({ onComplete }) {
         >
           {onboardingSlides.map((slide, index) => (
             <View key={index} style={styles.slide}>
-              <View style={styles.slideIconContainer}>
-                <Text style={styles.slideIcon}>{index + 1}</Text>
-              </View>
               <Text style={styles.slideText}>{slide.text}</Text>
               <Text style={styles.slideSubtext}>{slide.subtext}</Text>
             </View>
@@ -291,13 +288,11 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
   header: { paddingTop: 60, paddingHorizontal: 30, alignItems: 'center' },
   logo: { fontFamily: 'Space Mono', fontSize: 42, fontWeight: 'bold', color: '#1a1a1a', letterSpacing: 2 },
-  tagline: { fontFamily: 'Space Mono', fontSize: 8, letterSpacing: 5, color: '#ccc', marginTop: 8 },
+  tagline: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#1a1a1a', marginTop: 8, fontWeight: '500' },
   slideScroll: { flex: 1 },
-  slide: { width, paddingHorizontal: 40, alignItems: 'center', justifyContent: 'center' },
-  slideIconContainer: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 30 },
-  slideIcon: { fontFamily: 'Space Mono', fontSize: 28, color: '#fff', fontWeight: 'bold' },
-  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 26, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 36, marginBottom: 12 },
-  slideSubtext: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', textAlign: 'center' },
+  slide: { width, paddingHorizontal: 40, alignItems: 'center', justifyContent: 'center', paddingBottom: 40 },
+  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 28, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 38, marginBottom: 16 },
+  slideSubtext: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', textAlign: 'center' },
   dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1a1a1a', marginHorizontal: 4 },
   footer: { paddingHorizontal: 30, paddingBottom: 40 },
@@ -309,7 +304,7 @@ const styles = StyleSheet.create({
   backText: { fontSize: 24, color: '#1a1a1a' },
   formContent: { flex: 1, paddingHorizontal: 30, justifyContent: 'center' },
   formTitle: { fontFamily: 'Cormorant Garamond', fontSize: 28, fontStyle: 'italic', color: '#1a1a1a', textAlign: 'center', marginBottom: 8 },
-  formSubtitle: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', textAlign: 'center', marginBottom: 30 },
+  formSubtitle: { fontFamily: 'Space Mono', fontSize: 12, color: '#666', textAlign: 'center', marginBottom: 30 },
   nameInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 18, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 18, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 20 },
   ageInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 18, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 32, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 10 },
   errorText: { fontFamily: 'Space Mono', fontSize: 10, color: '#ff4444', textAlign: 'center', marginBottom: 10 },
@@ -326,6 +321,6 @@ const styles = StyleSheet.create({
   orientationInfo: { flex: 1 },
   orientationLabel: { fontFamily: 'Space Mono', fontSize: 13, color: '#1a1a1a', marginBottom: 2 },
   orientationLabelSelected: { fontWeight: 'bold' },
-  orientationDesc: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
+  orientationDesc: { fontFamily: 'Space Mono', fontSize: 10, color: '#666' },
   checkmark: { fontSize: 18, color: '#1a1a1a', fontWeight: 'bold' },
 })
