@@ -1,45 +1,27 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
-export default function ProfileScreen({ userName, onComplete }) {
-  const [age, setAge] = useState('')
+export default function ProfileScreen({ userData, onComplete }) {
   const [bio, setBio] = useState('')
   const [interests, setInterests] = useState('')
 
   const handleComplete = () => {
-    if (!age || !bio) return
-    
     const profileData = {
-      name: userName,
-      age: parseInt(age),
       bio: bio,
       interests: interests.split(',').map(i => i.trim()).filter(i => i)
     }
-    
     onComplete(profileData)
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hey {userName}! 👋</Text>
-        <Text style={styles.title}>Tell us about yourself</Text>
+        <Text style={styles.greeting}>Hey {userData?.name}! 👋</Text>
+        <Text style={styles.title}>Tell us your story</Text>
+        <Text style={styles.subtitle}>What makes you unique?</Text>
       </View>
 
       <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>AGE</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Your age"
-            placeholderTextColor="#bbb"
-            value={age}
-            onChangeText={setAge}
-            keyboardType="numeric"
-            maxLength={2}
-          />
-        </View>
-
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>YOUR STORY</Text>
           <Text style={styles.inputHint}>Write something about yourself...</Text>
@@ -68,11 +50,10 @@ export default function ProfileScreen({ userName, onComplete }) {
         </View>
 
         <TouchableOpacity 
-          style={[styles.button, (!age || !bio) && styles.buttonDisabled]}
+          style={styles.button}
           onPress={handleComplete}
-          disabled={!age || !bio}
         >
-          <Text style={styles.buttonText}>START DISCOVERING</Text>
+          <Text style={styles.buttonText}>CONTINUE TO QUIZ</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -102,6 +83,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontStyle: 'italic',
     color: '#1a1a1a',
+  },
+  subtitle: {
+    fontFamily: 'Space Mono',
+    fontSize: 11,
+    color: '#999',
+    marginTop: 4,
   },
   form: {
     gap: 20,
@@ -146,9 +133,6 @@ const styles = StyleSheet.create({
     padding: 18,
     alignItems: 'center',
     marginTop: 20,
-  },
-  buttonDisabled: {
-    opacity: 0.4,
   },
   buttonText: {
     fontFamily: 'Space Mono',

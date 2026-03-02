@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react'
 import { 
   View, Text, TextInput, TouchableOpacity, StyleSheet, 
-  Animated, Dimensions 
+  Animated, Dimensions, ScrollView
 } from 'react-native'
 
 const { width } = Dimensions.get('window')
 
-const slides = [
+const onboardingSlides = [
   { 
     text: "What you say matters, not how you look", 
     subtext: "Connect through words, not appearances",
@@ -24,34 +24,130 @@ const slides = [
   },
 ]
 
+const genderOptions = [
+  { id: 'woman', label: 'Woman', emoji: '👩' },
+  { id: 'man', label: 'Man', emoji: '👨' },
+  { id: 'non-binary', label: 'Non-binary', emoji: '🧑' },
+  { id: 'other', label: 'Other', emoji: '✨' },
+]
+
+const orientationOptions = [
+  { id: 'straight', label: 'Straight', desc: 'Interested in opposite gender' },
+  { id: 'gay', label: 'Gay/Lesbian', desc: 'Interested in same gender' },
+  { id: 'bisexual', label: 'Bisexual', desc: 'Interested in multiple genders' },
+  { id: 'queer', label: 'Queer', desc: 'Interested in all genders' },
+  { id: 'asexual', label: 'Asexual', desc: 'Little/no sexual attraction' },
+  { id: 'unsure', label: 'Still figuring it out', desc: '' },
+]
+
 export default function OnboardingScreen({ onComplete }) {
-  const [screen, setScreen] = useState('onboarding') // 'onboarding' | 'name'
+  const [screen, setScreen] = useState('onboarding') // 'onboarding' | 'name' | 'age' | 'gender' | 'orientation'
   const [slideIndex, setSlideIndex] = useState(0)
+  
+  // Form data
   const [name, setName] = useState('')
+  const [age, setAge] = useState('')
+  const [gender, setGender] = useState('')
+  const [orientation, setOrientation] = useState('')
+  
   const scrollX = useRef(new Animated.Value(0)).current
 
-  const onScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: true }
-  )
-
-  const handleNameSubmit = () => {
-    if (name.trim()) {
-      onComplete(name.trim())
+  const validateAndContinue = () => {
+    if (screen === 'name') {
+      if (!name.trim()) return false
+      setScreen('age')
+    } else if (screen === 'age') {
+      const ageNum = parseInt(age)
+      if (!age || isNaN(ageNum)) return false
+      if (ageNum < 18) return false
+      setScreen('gender')
+    } else if (screen === 'gender') {
+      if (!gender) return false
+      setScreen('orientation')
+    } else if (screen === 'orientation') {
+      if (!orientation) return false
+      onComplete({ name: name.trim(), age: parseInt(age), gender, orientation })
     }
+    return true
   }
 
-  // Name Input Screen
+  // Onboarding Slides
+  if (screen === 'onboarding') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.logo}>VERBA</Text>
+          <Text style={styles.tagline}>WORDS BEFORE LOOKS</Text>
+        </View>
+
+        <Animated.ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
+          style={styles.slideScroll}
+        >
+          {onboardingSlides.map((slide, index) => (
+            <View key={index} style={styles.slide}>
+              <View style={styles.slideIconContainer}>
+                <Text style={styles.slideIcon}>{slide.icon}</Text>
+              </View>
+              <Text style={styles.slideText}>{slide.text}</Text>
+              <Text style={styles.slideSubtext}>{slide.subtext}</Text>
+            </View>
+          ))}
+        </Animated.ScrollView>
+
+        <View style={styles.dotsContainer}>
+          {onboardingSlides.map((_, index) => {
+            const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
+            const scale = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.8, 1.2, 0.8],
+              extrapolate: 'clamp',
+            })
+            const opacity = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.4, 1, 0.4],
+              extrapolate: 'clamp',
+            })
+            return (
+              <Animated.View 
+                key={index} 
+                style={[styles.dot, { transform: [{ scale }], opacity }]} 
+              />
+            )
+          })}
+        </View>
+
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            style={styles.primaryBtn}
+            onPress={() => setScreen('name')}
+          >
+            <Text style={styles.primaryBtnText}>GET STARTED</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  // Name Screen
   if (screen === 'name') {
     return (
       <View style={styles.container}>
-        <View style={styles.nameHeader}>
-          <Text style={styles.logo}>VERBA</Text>
+        <View style={styles.formHeader}>
+          <TouchableOpacity onPress={() => setScreen('onboarding')}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.nameContent}>
-          <Text style={styles.nameTitle}>What should we call you?</Text>
-          <Text style={styles.nameSubtitle}>This is how you'll appear to others</Text>
+        <View style={styles.formContent}>
+          <Text style={styles.formTitle}>What should we call you?</Text>
+          <Text style={styles.formSubtitle}>This is how you'll appear to others</Text>
 
           <TextInput
             style={styles.nameInput}
@@ -64,76 +160,145 @@ export default function OnboardingScreen({ onComplete }) {
           />
 
           <TouchableOpacity 
-            style={[styles.nameBtn, !name.trim() && styles.nameBtnDisabled]}
-            onPress={handleNameSubmit}
+            style={[styles.primaryBtn, !name.trim() && styles.primaryBtnDisabled]}
+            onPress={validateAndContinue}
             disabled={!name.trim()}
           >
-            <Text style={styles.nameBtnText}>CONTINUE</Text>
+            <Text style={styles.primaryBtnText}>CONTINUE</Text>
           </TouchableOpacity>
         </View>
       </View>
     )
   }
 
-  // Onboarding Screen
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.logo}>VERBA</Text>
-        <Text style={styles.tagline}>WORDS BEFORE LOOKS</Text>
-      </View>
+  // Age Screen
+  if (screen === 'age') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.formHeader}>
+          <TouchableOpacity onPress={() => setScreen('name')}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.formContent}>
+          <Text style={styles.formTitle}>How old are you?</Text>
+          <Text style={styles.formSubtitle}>You must be 18+ to use Verba</Text>
 
-      <Animated.ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        style={styles.slideScroll}
-      >
-        {slides.map((slide, index) => (
-          <View key={index} style={styles.slide}>
-            <View style={styles.slideIconContainer}>
-              <Text style={styles.slideIcon}>{slide.icon}</Text>
-            </View>
-            <Text style={styles.slideText}>{slide.text}</Text>
-            <Text style={styles.slideSubtext}>{slide.subtext}</Text>
+          <TextInput
+            style={styles.ageInput}
+            placeholder="18"
+            placeholderTextColor="#bbb"
+            value={age}
+            onChangeText={setAge}
+            keyboardType="numeric"
+            maxLength={2}
+            autoFocus
+          />
+
+          {age && parseInt(age) < 18 && (
+            <Text style={styles.errorText}>You must be 18 or older</Text>
+          )}
+
+          <TouchableOpacity 
+            style={[styles.primaryBtn, (!age || parseInt(age) < 18) && styles.primaryBtnDisabled]}
+            onPress={validateAndContinue}
+            disabled={!age || parseInt(age) < 18}
+          >
+            <Text style={styles.primaryBtnText}>CONTINUE</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  // Gender Screen
+  if (screen === 'gender') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.formHeader}>
+          <TouchableOpacity onPress={() => setScreen('age')}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.formContent}>
+          <Text style={styles.formTitle}>How do you identify?</Text>
+          <Text style={styles.formSubtitle}>This helps us find the right matches</Text>
+
+          <View style={styles.optionsGrid}>
+            {genderOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={[styles.optionCard, gender === option.id && styles.optionCardSelected]}
+                onPress={() => setGender(option.id)}
+              >
+                <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                <Text style={[styles.optionLabel, gender === option.id && styles.optionLabelSelected]}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        ))}
-      </Animated.ScrollView>
 
-      <View style={styles.dotsContainer}>
-        {slides.map((_, index) => {
-          const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.8, 1.2, 0.8],
-            extrapolate: 'clamp',
-          })
-          const opacity = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.4, 1, 0.4],
-            extrapolate: 'clamp',
-          })
-          return (
-            <Animated.View 
-              key={index} 
-              style={[styles.dot, { transform: [{ scale }], opacity }]} 
-            />
-          )
-        })}
+          <TouchableOpacity 
+            style={[styles.primaryBtn, !gender && styles.primaryBtnDisabled]}
+            onPress={validateAndContinue}
+            disabled={!gender}
+          >
+            <Text style={styles.primaryBtnText}>CONTINUE</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
+    )
+  }
 
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.primaryBtn}
-          onPress={() => setScreen('name')}
-        >
-          <Text style={styles.primaryBtnText}>GET STARTED</Text>
-        </TouchableOpacity>
+  // Orientation Screen
+  if (screen === 'orientation') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.formHeader}>
+          <TouchableOpacity onPress={() => setScreen('gender')}>
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.formContent}>
+          <Text style={styles.formTitle}>Who's your type?</Text>
+          <Text style={styles.formSubtitle}>We'll show you compatible matches</Text>
+
+          <View style={styles.orientationList}>
+            {orientationOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={[styles.orientationCard, orientation === option.id && styles.orientationCardSelected]}
+                onPress={() => setOrientation(option.id)}
+              >
+                <View style={styles.orientationInfo}>
+                  <Text style={[styles.orientationLabel, orientation === option.id && styles.orientationLabelSelected]}>
+                    {option.label}
+                  </Text>
+                  {option.desc && (
+                    <Text style={styles.orientationDesc}>{option.desc}</Text>
+                  )}
+                </View>
+                {orientation === option.id && (
+                  <Text style={styles.checkmark}>✓</Text>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity 
+            style={[styles.primaryBtn, !orientation && styles.primaryBtnDisabled]}
+            onPress={validateAndContinue}
+            disabled={!orientation}
+          >
+            <Text style={styles.primaryBtnText}>FINISH SETUP</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
-    </View>
-  )
+    )
+  }
+
+  return null
 }
 
 const styles = StyleSheet.create({
@@ -223,6 +388,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
+  primaryBtnDisabled: {
+    opacity: 0.4,
+  },
   primaryBtnText: {
     fontFamily: 'Space Mono',
     fontSize: 11,
@@ -230,18 +398,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-
-  // Name Screen
-  nameHeader: {
-    paddingTop: 40,
-    alignItems: 'center',
+  
+  // Form Styles
+  formHeader: {
+    flexDirection: 'row',
+    padding: 20,
+    paddingTop: 50,
   },
-  nameContent: {
+  backText: {
+    fontSize: 24,
+    color: '#1a1a1a',
+  },
+  formContent: {
     flex: 1,
     paddingHorizontal: 30,
     justifyContent: 'center',
   },
-  nameTitle: {
+  formTitle: {
     fontFamily: 'Cormorant Garamond',
     fontSize: 28,
     fontStyle: 'italic',
@@ -249,12 +422,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
-  nameSubtitle: {
+  formSubtitle: {
     fontFamily: 'Space Mono',
     fontSize: 11,
     color: '#999',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
   },
   nameInput: {
     backgroundColor: '#fff',
@@ -269,20 +442,95 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
     marginBottom: 20,
   },
-  nameBtn: {
-    backgroundColor: '#1a1a1a',
-    paddingVertical: 18,
+  ageInput: {
+    backgroundColor: '#fff',
     borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    fontFamily: 'Space Mono',
+    fontSize: 32,
+    color: '#1a1a1a',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: '#eee',
+    marginBottom: 10,
+  },
+  errorText: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#ff4444',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  optionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 30,
+  },
+  optionCard: {
+    width: '45%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#eee',
   },
-  nameBtnDisabled: {
-    opacity: 0.4,
+  optionCardSelected: {
+    borderColor: '#1a1a1a',
+    backgroundColor: '#1a1a1a',
   },
-  nameBtnText: {
+  optionEmoji: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  optionLabel: {
     fontFamily: 'Space Mono',
     fontSize: 11,
-    letterSpacing: 3,
+    color: '#1a1a1a',
+  },
+  optionLabelSelected: {
     color: '#fff',
+  },
+  orientationList: {
+    gap: 10,
+    marginBottom: 30,
+  },
+  orientationCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 2,
+    borderColor: '#eee',
+  },
+  orientationCardSelected: {
+    borderColor: '#1a1a1a',
+  },
+  orientationInfo: {
+    flex: 1,
+  },
+  orientationLabel: {
+    fontFamily: 'Space Mono',
+    fontSize: 13,
+    color: '#1a1a1a',
+    marginBottom: 2,
+  },
+  orientationLabelSelected: {
+    fontWeight: 'bold',
+  },
+  orientationDesc: {
+    fontFamily: 'Space Mono',
+    fontSize: 10,
+    color: '#999',
+  },
+  checkmark: {
+    fontSize: 18,
+    color: '#1a1a1a',
     fontWeight: 'bold',
   },
 })

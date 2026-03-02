@@ -16,22 +16,17 @@ const quizQuestions = [
   },
   {
     id: 3,
-    question: "How do you feel about photos?",
-    options: ["I'd rather not share", "I'll share eventually", "No problem sharing", "Only if they do first"]
-  },
-  {
-    id: 4,
     question: "How many conversations at once?",
     options: ["One at a time", "A few is fine", "Keep it open"]
   },
   {
-    id: 5,
+    id: 4,
     question: "What matters most in a match?",
     options: ["Their words/story", "Their interests", "Their values", "The conversation flow"]
   },
 ]
 
-export default function QuizScreen({ userName, onComplete }) {
+export default function QuizScreen({ userData, onComplete }) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
   const scrollX = new Animated.Value(0)
@@ -59,7 +54,7 @@ export default function QuizScreen({ userName, onComplete }) {
         <TouchableOpacity onPress={handleSkip} style={styles.skipBtn}>
           <Text style={styles.skipText}>SKIP</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{userName}'s Quiz</Text>
+        <Text style={styles.headerTitle}>{userData?.name}'s Quiz</Text>
       </View>
 
       <View style={styles.progressContainer}>

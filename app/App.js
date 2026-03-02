@@ -4,25 +4,28 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native'
 // Screens
 import SplashScreen from './screens/SplashScreen'
 import OnboardingScreen from './screens/OnboardingScreen'
-import QuizScreen from './screens/QuizScreen'
 import ProfileScreen from './screens/ProfileScreen'
+import QuizScreen from './screens/QuizScreen'
 import DiscoverScreen from './screens/DiscoverScreen'
 import ChatScreen from './screens/ChatScreen'
 import SettingsScreen from './screens/SettingsScreen'
 
 // Storage
-import { hasCompletedOnboarding, getUserProfile, getSettings, clearUserProfile } from './lib/storage'
+import { 
+  hasCompletedOnboarding, 
+  getUserProfile, 
+  getSettings, 
+  saveUserProfile,
+  saveQuizData,
+  saveSettings,
+  clearUserProfile,
+  getQuizData
+} from './lib/storage'
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('splash')
   const [loading, setLoading] = useState(true)
-  const [userData, setUserData] = useState({
-    name: '',
-    age: '',
-    bio: '',
-    interests: '',
-    quizData: {},
-  })
+  const [userData, setUserData] = useState(null)
   const [settings, setSettings] = useState({ ghostMode: true })
 
   useEffect(() => {
@@ -33,17 +36,11 @@ export default function App() {
     const hasOnboarded = await hasCompletedOnboarding()
     if (hasOnboarded) {
       const profile = await getUserProfile()
-      const quizData = await getUserData()
+      const quizData = await getQuizData()
       const appSettings = await getSettings()
       
       if (profile) {
-        setUserData({
-          name: profile.name || '',
-          age: profile.age || '',
-          bio: profile.bio || '',
-          interests: profile.interests || '',
-          quizData: quizData || {},
-        })
+        setUserData({ ...profile, quizData: quizData || {} })
         setSettings(appSettings)
         setCurrentScreen('discover')
       } else {
@@ -55,24 +52,34 @@ export default function App() {
     setLoading(false)
   }
 
-  const handleOnboardingComplete = async (name) => {
-    setUserData(prev => ({ ...prev, name }))
-    setCurrentScreen('quiz')
-  }
-
-  const handleQuizComplete = async (quizData) => {
-    setUserData(prev => ({ ...prev, quizData }))
-    await saveQuizData(quizData)
+  const handleOnboardingComplete = async (onboardingData) => {
+    // Save basic info and move to profile (story)
+    const fullData = {
+      name: onboardingData.name,
+      age: onboardingData.age,
+      gender: onboardingData.gender,
+      orientation: onboardingData.orientation,
+      bio: '',
+      interests: [],
+      quizData: {},
+    }
+    await saveUserProfile(fullData)
+    setUserData(fullData)
     setCurrentScreen('profile')
   }
 
   const handleProfileComplete = async (profileData) => {
-    const fullData = {
-      ...userData,
-      ...profileData,
-    }
-    setUserData(fullData)
+    const fullData = { ...userData, ...profileData }
     await saveUserProfile(fullData)
+    setUserData(fullData)
+    setCurrentScreen('quiz')
+  }
+
+  const handleQuizComplete = async (quizData) => {
+    const fullData = { ...userData, quizData }
+    await saveUserProfile(fullData)
+    await saveQuizData(quizData)
+    setUserData(fullData)
     setCurrentScreen('discover')
   }
 
@@ -83,13 +90,7 @@ export default function App() {
 
   const handleSignOut = async () => {
     await clearUserProfile()
-    setUserData({
-      name: '',
-      age: '',
-      bio: '',
-      interests: '',
-      quizData: {},
-    })
+    setUserData(null)
     setCurrentScreen('onboarding')
   }
 
@@ -109,19 +110,19 @@ export default function App() {
     case 'onboarding':
       return <OnboardingScreen onComplete={handleOnboardingComplete} />
     
-    case 'quiz':
-      return (
-        <QuizScreen 
-          userName={userData.name}
-          onComplete={handleQuizComplete} 
-        />
-      )
-    
     case 'profile':
       return (
         <ProfileScreen 
-          userName={userData.name}
+          userData={userData}
           onComplete={handleProfileComplete}
+        />
+      )
+    
+    case 'quiz':
+      return (
+        <QuizScreen 
+          userData={userData}
+          onComplete={handleQuizComplete} 
         />
       )
     
