@@ -32,49 +32,16 @@ const demoProfiles = [
   }
 ]
 
-// Proper Heart Icon using two circles and rotation
 const HeartIcon = ({ size = 30, color = '#fff' }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
     <View style={{ width: size, height: size, position: 'relative' }}>
-      {/* Left lobe */}
-      <View style={{
-        position: 'absolute',
-        width: size / 2,
-        height: size / 2,
-        backgroundColor: color,
-        borderRadius: size / 4,
-        left: 0,
-        bottom: size / 4,
-      }} />
-      {/* Right lobe */}
-      <View style={{
-        position: 'absolute',
-        width: size / 2,
-        height: size / 2,
-        backgroundColor: color,
-        borderRadius: size / 4,
-        right: 0,
-        bottom: size / 4,
-      }} />
-      {/* Bottom triangle */}
-      <View style={{
-        position: 'absolute',
-        width: 0,
-        height: 0,
-        borderLeftWidth: size / 4,
-        borderRightWidth: size / 4,
-        borderBottomWidth: size / 3,
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: color,
-        bottom: 0,
-        left: size / 4,
-      }} />
+      <View style={{ position: 'absolute', width: size / 2, height: size / 2, backgroundColor: color, borderRadius: size / 4, left: 0, bottom: size / 4 }} />
+      <View style={{ position: 'absolute', width: size / 2, height: size / 2, backgroundColor: color, borderRadius: size / 4, right: 0, bottom: size / 4 }} />
+      <View style={{ position: 'absolute', width: 0, height: 0, borderLeftWidth: size / 4, borderRightWidth: size / 4, borderBottomWidth: size / 3, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: color, bottom: 0, left: size / 4 }} />
     </View>
   </View>
 )
 
-// Proper X Icon
 const XIcon = ({ size = 26 }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
     <View style={{ width: size * 0.7, height: 3, backgroundColor: '#999', borderRadius: 2, transform: [{ rotate: '45deg' }], position: 'absolute' }} />
@@ -82,7 +49,6 @@ const XIcon = ({ size = 26 }) => (
   </View>
 )
 
-// Proper Gear Icon
 const GearIcon = ({ size = 18 }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
     <View style={{ width: size * 0.5, height: size * 0.5, borderRadius: size * 0.25, borderWidth: 2.5, borderColor: '#888', backgroundColor: '#f0f0f0' }} />
@@ -119,12 +85,6 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
-          <View style={styles.photoPlaceholder}>
-            <View style={styles.placeholderIcon}>
-              <Text style={styles.placeholderText}>V</Text>
-            </View>
-          </View>
-
           <View style={styles.cardContent}>
             <View style={styles.nameRow}>
               <Text style={styles.name}>{currentProfile.name}, {currentProfile.age}</Text>
@@ -133,29 +93,30 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
               </View>
             </View>
             
-            <View style={styles.promptSection}>
-              <View style={styles.prompt}>
-                <Text style={styles.promptLabel}>HER STORY</Text>
-                <Text style={styles.story}>{currentProfile.bio}</Text>
-              </View>
-
-              {currentProfile.promptAnswers && (
-                <View style={styles.prompt}>
-                  <Text style={styles.promptLabel}>QUICK Q</Text>
-                  {Object.values(currentProfile.promptAnswers).slice(0, 2).map((answer, i) => (
-                    <Text key={i} style={styles.promptAnswer}>{answer}</Text>
-                  ))}
-                </View>
-              )}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>STORY</Text>
+              <Text style={styles.bio}>{currentProfile.bio}</Text>
             </View>
 
-            {currentProfile.interests && (
-              <View style={styles.tags}>
-                {currentProfile.interests.map((tag, i) => (
-                  <View key={i} style={styles.tag}>
-                    <Text style={styles.tagText}>{tag}</Text>
-                  </View>
+            {currentProfile.promptAnswers && (
+              <View style={styles.section}>
+                <Text style={styles.sectionLabel}>QUICK Q</Text>
+                {Object.values(currentProfile.promptAnswers).slice(0, 2).map((answer, i) => (
+                  <Text key={i} style={styles.promptAnswer}>{answer}</Text>
                 ))}
+              </View>
+            )}
+
+            {currentProfile.interests && (
+              <View style={styles.section}>
+                <Text style={styles.sectionLabel}>INTERESTS</Text>
+                <View style={styles.tags}>
+                  {currentProfile.interests.map((tag, i) => (
+                    <View key={i} style={styles.tag}>
+                      <Text style={styles.tagText}>{tag}</Text>
+                    </View>
+                  ))}
+                </View>
               </View>
             )}
 
@@ -172,7 +133,7 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
         </View>
 
         <View style={styles.queueInfo}>
-          <Text style={styles.queueText}>+{demoProfiles.length - currentIndex - 1} more in queue</Text>
+          <Text style={styles.queueText}>+{demoProfiles.length - currentIndex - 1} more</Text>
         </View>
       </ScrollView>
 
@@ -200,26 +161,22 @@ const styles = StyleSheet.create({
   logo: { fontFamily: 'Space Mono', fontSize: 20, fontWeight: 'bold', letterSpacing: 2 },
   content: { padding: 16, paddingBottom: 100 },
   card: { backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 20 },
-  photoPlaceholder: { height: 200, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  placeholderIcon: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#333', justifyContent: 'center', alignItems: 'center' },
-  placeholderText: { fontFamily: 'Space Mono', fontSize: 20, color: '#fff', fontWeight: 'bold' },
   cardContent: { padding: 24 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  name: { fontSize: 26, fontWeight: '600' },
+  nameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
+  name: { fontSize: 28, fontWeight: '600' },
   styleBadge: { backgroundColor: '#f0f0f0', paddingVertical: 4, paddingHorizontal: 10, borderRadius: 12 },
   styleBadgeText: { fontFamily: 'Space Mono', fontSize: 9, color: '#666' },
-  promptSection: { marginBottom: 16 },
-  prompt: { backgroundColor: '#f8f8f8', borderRadius: 12, padding: 14, marginBottom: 10 },
-  promptLabel: { fontFamily: 'Space Mono', fontSize: 9, letterSpacing: 1, color: '#999', marginBottom: 8 },
-  story: { fontFamily: 'Cormorant Garamond', fontSize: 15, fontStyle: 'italic', lineHeight: 24, color: '#444' },
-  promptAnswer: { fontFamily: 'Cormorant Garamond', fontSize: 14, fontStyle: 'italic', color: '#444', marginBottom: 4 },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
+  section: { marginBottom: 20 },
+  sectionLabel: { fontFamily: 'Space Mono', fontSize: 9, letterSpacing: 1, color: '#999', marginBottom: 8 },
+  bio: { fontFamily: 'Cormorant Garamond', fontSize: 17, fontStyle: 'italic', lineHeight: 26, color: '#333' },
+  promptAnswer: { fontFamily: 'Cormorant Garamond', fontSize: 15, fontStyle: 'italic', color: '#444', marginBottom: 8 },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tag: { backgroundColor: '#1a1a1a', paddingVertical: 6, paddingHorizontal: 14, borderRadius: 20 },
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
-  actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingTop: 8 },
+  actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 20 },
   passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
   likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  queueInfo: { alignItems: 'center', marginTop: 16 },
+  queueInfo: { alignItems: 'center', marginTop: 20 },
   queueText: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
