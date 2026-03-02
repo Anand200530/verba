@@ -7,12 +7,26 @@ const writingPrompts = [
   { id: 3, prompt: "What's something you're passionate about?" },
 ]
 
+const presetInterests = [
+  'Reading', 'Writing', 'Music', 'Movies', 'Travel', 'Cooking',
+  'Fitness', 'Art', 'Photography', 'Gaming', 'Tech', 'Nature',
+  'Coffee', 'Wine', 'Pets', 'Fashion', 'Science', 'History'
+]
+
 export default function ProfileScreen({ userData, onComplete }) {
   const [screen, setScreen] = useState('bio')
   const [bio, setBio] = useState('')
-  const [interests, setInterests] = useState('')
+  const [selectedInterests, setSelectedInterests] = useState([])
   const [promptAnswers, setPromptAnswers] = useState({})
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
+
+  const toggleInterest = (interest) => {
+    if (selectedInterests.includes(interest)) {
+      setSelectedInterests(selectedInterests.filter(i => i !== interest))
+    } else if (selectedInterests.length < 5) {
+      setSelectedInterests([...selectedInterests, interest])
+    }
+  }
 
   const analyzeWritingStyle = (text) => {
     const words = text.trim().split(/\s+/).length
@@ -23,6 +37,10 @@ export default function ProfileScreen({ userData, onComplete }) {
 
   const handleBioComplete = () => {
     if (!bio.trim()) return
+    setScreen('interests')
+  }
+
+  const handleInterestComplete = () => {
     setScreen('prompts')
   }
 
@@ -44,13 +62,14 @@ export default function ProfileScreen({ userData, onComplete }) {
     const writingStyle = analyzeWritingStyle(bio)
     const profileData = {
       bio: bio,
-      interests: interests.split(',').map(i => i.trim()).filter(i => i),
+      interests: selectedInterests,
       writingStyle,
       promptAnswers,
     }
     onComplete(profileData)
   }
 
+  // Prompts Screen
   if (screen === 'prompts') {
     const currentPrompt = writingPrompts[currentPromptIndex]
     const currentAnswer = promptAnswers[currentPromptIndex] || ''
@@ -58,50 +77,55 @@ export default function ProfileScreen({ userData, onComplete }) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Now for the fun part</Text>
-          <Text style={styles.title}>Answer a few prompts</Text>
-          <Text style={styles.subtitle}>These help your matches know the real you</Text>
+          <Text style={styles.greeting}>One more step</Text>
+          <Text style={styles.title}>Answer prompts</Text>
+          <Text style={styles.subtitle}>These help your matches know you better</Text>
         </View>
 
         <View style={styles.promptCard}>
-          <Text style={styles.promptNumber}>
-            {currentPromptIndex + 1} of {writingPrompts.length}
-          </Text>
+          <Text style={styles.promptNumber}>{currentPromptIndex + 1} / {writingPrompts.length}</Text>
           <Text style={styles.promptText}>{currentPrompt.prompt}</Text>
-          
-          <TextInput
-            style={styles.promptInput}
-            placeholder="Write your answer here..."
-            placeholderTextColor="#bbb"
-            value={currentAnswer}
-            onChangeText={(text) => handlePromptAnswer(text)}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
+          <TextInput style={styles.promptInput} placeholder="Write your answer..." placeholderTextColor="#bbb" value={currentAnswer} onChangeText={(text) => handlePromptAnswer(text)} multiline numberOfLines={4} textAlignVertical="top" />
         </View>
 
         <View style={styles.promptActions}>
           <TouchableOpacity style={styles.skipBtn} onPress={handleSkipPrompt}>
-            <Text style={styles.skipBtnText}>Skip this one</Text>
+            <Text style={styles.skipBtnText}>Skip</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.nextPromptBtn} onPress={currentAnswer.trim() ? handleFinish : handleSkipPrompt}>
-            <Text style={styles.nextPromptBtnText}>
-              {currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}
-            </Text>
+            <Text style={styles.nextPromptBtnText}>{currentPromptIndex === writingPrompts.length - 1 ? (currentAnswer.trim() ? 'Finish' : 'Skip All') : 'Next'}</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.promptDots}>
-          {writingPrompts.map((_, i) => (
-            <View key={i} style={[styles.promptDot, i === currentPromptIndex && styles.promptDotActive, promptAnswers[i] && styles.promptDotAnswered]} />
-          ))}
         </View>
       </ScrollView>
     )
   }
 
+  // Interests Screen
+  if (screen === 'interests') {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Select your interests</Text>
+          <Text style={styles.title}>What do you like?</Text>
+          <Text style={styles.subtitle}>Choose up to 5</Text>
+        </View>
+
+        <View style={styles.interestGrid}>
+          {presetInterests.map((interest) => (
+            <TouchableOpacity key={interest} style={[styles.interestChip, selectedInterests.includes(interest) && styles.interestChipSelected]} onPress={() => toggleInterest(interest)}>
+              <Text style={[styles.interestText, selectedInterests.includes(interest) && styles.interestTextSelected]}>{interest}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleInterestComplete}>
+          <Text style={styles.buttonText}>CONTINUE</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    )
+  }
+
+  // Bio Screen
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
@@ -113,29 +137,7 @@ export default function ProfileScreen({ userData, onComplete }) {
       <View style={styles.form}>
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>YOUR STORY</Text>
-          <Text style={styles.inputHint}>Write naturally - we will analyze your writing style</Text>
-          <TextInput
-            style={[styles.input, styles.bioInput]}
-            placeholder="I believe in slow mornings, handwritten letters, and conversations that go deep..."
-            placeholderTextColor="#bbb"
-            value={bio}
-            onChangeText={setBio}
-            multiline
-            numberOfLines={6}
-            textAlignVertical="top"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>INTERESTS</Text>
-          <Text style={styles.inputHint}>Separate with commas</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="books, coffee, writing, walking..."
-            placeholderTextColor="#bbb"
-            value={interests}
-            onChangeText={setInterests}
-          />
+          <TextInput style={[styles.input, styles.bioInput]} placeholder="Write something about yourself..." placeholderTextColor="#bbb" value={bio} onChangeText={setBio} multiline numberOfLines={6} textAlignVertical="top" />
         </View>
 
         <TouchableOpacity style={[styles.button, !bio.trim() && styles.buttonDisabled]} onPress={handleBioComplete} disabled={!bio.trim()}>
@@ -150,33 +152,29 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
   content: { padding: 30, paddingTop: 50 },
   header: { marginBottom: 30 },
-  greeting: { fontFamily: 'Space Mono', fontSize: 12, color: '#999', marginBottom: 8 },
-  title: { fontFamily: 'Cormorant Garamond', fontSize: 28, fontStyle: 'italic', color: '#1a1a1a' },
-  subtitle: { fontFamily: 'Space Mono', fontSize: 11, color: '#999', marginTop: 4 },
-  
+  greeting: { fontFamily: 'Space Mono', fontSize: 14, color: '#999', marginBottom: 8 },
+  title: { fontFamily: 'Cormorant Garamond', fontSize: 32, fontStyle: 'italic', color: '#1a1a1a' },
+  subtitle: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', marginTop: 4 },
   form: { gap: 20 },
   inputGroup: { marginBottom: 8 },
-  inputLabel: { fontFamily: 'Space Mono', fontSize: 9, letterSpacing: 1, color: '#999', marginBottom: 8 },
-  inputHint: { fontFamily: 'Space Mono', fontSize: 10, color: '#bbb', marginBottom: 8 },
-  input: { backgroundColor: '#fff', borderRadius: 10, padding: 16, fontFamily: 'Space Mono', fontSize: 14, color: '#1a1a1a', borderWidth: 1, borderColor: '#eee' },
-  bioInput: { height: 150, textAlignVertical: 'top', fontFamily: 'Cormorant Garamond', fontSize: 16, fontStyle: 'italic', lineHeight: 24 },
+  inputLabel: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 1, color: '#999', marginBottom: 8 },
+  input: { backgroundColor: '#fff', borderRadius: 10, padding: 16, fontFamily: 'Space Mono', fontSize: 16, color: '#1a1a1a', borderWidth: 1, borderColor: '#eee' },
+  bioInput: { height: 150, textAlignVertical: 'top', fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic', lineHeight: 28 },
   button: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center', marginTop: 20 },
   buttonDisabled: { opacity: 0.4 },
-  buttonText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
-
+  buttonText: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
+  interestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 30 },
+  interestChip: { backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 18, borderRadius: 20, borderWidth: 2, borderColor: '#eee' },
+  interestChipSelected: { backgroundColor: '#1a1a1a', borderColor: '#1a1a1a' },
+  interestText: { fontFamily: 'Space Mono', fontSize: 13, color: '#333' },
+  interestTextSelected: { color: '#fff' },
   promptCard: { backgroundColor: '#fff', borderRadius: 16, padding: 24, marginBottom: 20 },
-  promptNumber: { fontFamily: 'Space Mono', fontSize: 10, color: '#999', letterSpacing: 2, marginBottom: 12 },
+  promptNumber: { fontFamily: 'Space Mono', fontSize: 12, color: '#999', letterSpacing: 2, marginBottom: 12 },
   promptText: { fontFamily: 'Cormorant Garamond', fontSize: 22, fontStyle: 'italic', color: '#1a1a1a', marginBottom: 16, lineHeight: 30 },
   promptInput: { backgroundColor: '#faf9f7', borderRadius: 10, padding: 16, fontFamily: 'Cormorant Garamond', fontSize: 16, fontStyle: 'italic', color: '#1a1a1a', height: 100, textAlignVertical: 'top', borderWidth: 1, borderColor: '#eee' },
-  
   promptActions: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   skipBtn: { padding: 10 },
-  skipBtnText: { fontFamily: 'Space Mono', fontSize: 11, color: '#999' },
+  skipBtnText: { fontFamily: 'Space Mono', fontSize: 12, color: '#999' },
   nextPromptBtn: { backgroundColor: '#1a1a1a', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 24 },
-  nextPromptBtnText: { fontFamily: 'Space Mono', fontSize: 10, letterSpacing: 2, color: '#fff', fontWeight: 'bold' },
-  
-  promptDots: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  promptDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#eee' },
-  promptDotActive: { backgroundColor: '#1a1a1a' },
-  promptDotAnswered: { backgroundColor: '#1a1a1a' },
+  nextPromptBtnText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 2, color: '#fff', fontWeight: 'bold' },
 })
