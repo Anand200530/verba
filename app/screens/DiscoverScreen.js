@@ -109,11 +109,11 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
             <View style={styles.actions}>
               <TouchableOpacity style={styles.passBtn} onPress={handlePass}>
-                <Text style={styles.passIcon}>-</Text>
+                <Text style={styles.passIcon}>NO</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.likeBtn} onPress={handleLike}>
-                <Text style={styles.likeIcon}>+</Text>
+                <Text style={styles.likeIcon}>LIKE</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -126,11 +126,15 @@ export default function DiscoverScreen({ userData, onOpenChat, onOpenSettings })
 
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>D</Text>
+          <View style={styles.navIconActive}>
+            <Text style={styles.navIconTextActive}>V</Text>
+          </View>
           <Text style={styles.navLabelActive}>Discover</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
-          <Text style={styles.navIcon}>S</Text>
+          <View style={styles.navIcon}>
+            <Text style={styles.navIconText}>S</Text>
+          </View>
           <Text style={styles.navLabel}>Settings</Text>
         </TouchableOpacity>
       </View>
@@ -163,15 +167,18 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: '#1a1a1a', paddingVertical: 6, paddingHorizontal: 14, borderRadius: 20 },
   tagText: { fontFamily: 'Space Mono', fontSize: 10, color: '#fff' },
   actions: { flexDirection: 'row', justifyContent: 'center', gap: 24, paddingTop: 8 },
-  passBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
-  passIcon: { fontSize: 32, color: '#999' },
-  likeBtn: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
-  likeIcon: { fontSize: 32, color: '#fff', fontWeight: '300' },
+  passBtn: { width: 100, height: 50, borderRadius: 25, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderColor: '#e0e0e0' },
+  passIcon: { fontFamily: 'Space Mono', fontSize: 12, color: '#999', fontWeight: 'bold' },
+  likeBtn: { width: 100, height: 50, borderRadius: 25, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center' },
+  likeIcon: { fontFamily: 'Space Mono', fontSize: 12, color: '#fff', fontWeight: 'bold' },
   queueInfo: { alignItems: 'center', marginTop: 16 },
   queueText: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
   bottomNav: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-around', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   navItem: { alignItems: 'center' },
-  navIcon: { fontFamily: 'Space Mono', fontSize: 18, marginBottom: 4, fontWeight: 'bold' },
+  navIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
+  navIconText: { fontFamily: 'Space Mono', fontSize: 14, color: '#bbb', fontWeight: 'bold' },
+  navIconActive: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
+  navIconTextActive: { fontFamily: 'Space Mono', fontSize: 14, color: '#fff', fontWeight: 'bold' },
   navLabelActive: { fontFamily: 'Space Mono', fontSize: 9, color: '#1a1a1a', fontWeight: 'bold' },
   navLabel: { fontFamily: 'Space Mono', fontSize: 9, color: '#bbb' },
 })
