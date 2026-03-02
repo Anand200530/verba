@@ -35,7 +35,6 @@ const orientationOptions = [
 
 export default function OnboardingScreen({ onComplete }) {
   const [screen, setScreen] = useState('onboarding')
-  const [slideIndex, setSlideIndex] = useState(0)
   
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
@@ -205,7 +204,7 @@ export default function OnboardingScreen({ onComplete }) {
             <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView contentContainerStyle={styles.formContent}>
+        <ScrollView contentContainerStyle={styles.formContentCenter}>
           <Text style={styles.formTitle}>I am a...</Text>
           <Text style={styles.formSubtitle}>This helps us find the right matches</Text>
 
@@ -243,7 +242,7 @@ export default function OnboardingScreen({ onComplete }) {
             <Text style={styles.backText}>-</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView contentContainerStyle={styles.formContent}>
+        <ScrollView contentContainerStyle={styles.formContentCenter}>
           <Text style={styles.formTitle}>Interested in...</Text>
           <Text style={styles.formSubtitle}>We will show you compatible matches</Text>
 
@@ -286,41 +285,42 @@ export default function OnboardingScreen({ onComplete }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
-  header: { paddingTop: 60, paddingHorizontal: 30, alignItems: 'center' },
-  logo: { fontFamily: 'Space Mono', fontSize: 42, fontWeight: 'bold', color: '#1a1a1a', letterSpacing: 2 },
-  tagline: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#1a1a1a', marginTop: 8, fontWeight: '500' },
+  header: { paddingTop: 80, paddingHorizontal: 30, alignItems: 'center' },
+  logo: { fontFamily: 'Space Mono', fontSize: 48, fontWeight: 'bold', color: '#1a1a1a', letterSpacing: 2 },
+  tagline: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#1a1a1a', marginTop: 12, fontWeight: '500' },
   slideScroll: { flex: 1 },
-  slide: { width, paddingHorizontal: 40, alignItems: 'center', justifyContent: 'center', paddingBottom: 40 },
-  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 28, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 38, marginBottom: 16 },
-  slideSubtext: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', textAlign: 'center' },
-  dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
+  slide: { width, paddingHorizontal: 40, justifyContent: 'center', paddingVertical: 60 },
+  slideText: { fontFamily: 'Cormorant Garamond', fontSize: 32, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 44 },
+  slideSubtext: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', textAlign: 'center', marginTop: 20 },
+  dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 30 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1a1a1a', marginHorizontal: 4 },
-  footer: { paddingHorizontal: 30, paddingBottom: 40 },
+  footer: { paddingHorizontal: 30, paddingBottom: 50 },
   primaryBtn: { backgroundColor: '#1a1a1a', paddingVertical: 18, borderRadius: 12, alignItems: 'center' },
   primaryBtnDisabled: { opacity: 0.4 },
-  primaryBtnText: { fontFamily: 'Space Mono', fontSize: 11, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
+  primaryBtnText: { fontFamily: 'Space Mono', fontSize: 12, letterSpacing: 3, color: '#fff', fontWeight: 'bold' },
   
   formHeader: { flexDirection: 'row', padding: 20, paddingTop: 50 },
   backText: { fontSize: 24, color: '#1a1a1a' },
   formContent: { flex: 1, paddingHorizontal: 30, justifyContent: 'center' },
-  formTitle: { fontFamily: 'Cormorant Garamond', fontSize: 28, fontStyle: 'italic', color: '#1a1a1a', textAlign: 'center', marginBottom: 8 },
-  formSubtitle: { fontFamily: 'Space Mono', fontSize: 12, color: '#666', textAlign: 'center', marginBottom: 30 },
-  nameInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 18, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 18, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 20 },
-  ageInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 18, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 32, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 10 },
-  errorText: { fontFamily: 'Space Mono', fontSize: 10, color: '#ff4444', textAlign: 'center', marginBottom: 10 },
+  formContentCenter: { flexGrow: 1, paddingHorizontal: 30, justifyContent: 'center', paddingBottom: 50 },
+  formTitle: { fontFamily: 'Cormorant Garamond', fontSize: 32, fontStyle: 'italic', color: '#1a1a1a', textAlign: 'center', marginBottom: 12 },
+  formSubtitle: { fontFamily: 'Space Mono', fontSize: 13, color: '#666', textAlign: 'center', marginBottom: 40 },
+  nameInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 20, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 18, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 30 },
+  ageInput: { backgroundColor: '#fff', borderRadius: 12, paddingVertical: 20, paddingHorizontal: 20, fontFamily: 'Space Mono', fontSize: 36, color: '#1a1a1a', textAlign: 'center', borderWidth: 1, borderColor: '#eee', marginBottom: 10 },
+  errorText: { fontFamily: 'Space Mono', fontSize: 11, color: '#ff4444', textAlign: 'center', marginBottom: 20 },
   
-  optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginBottom: 30 },
-  optionCard: { width: '45%', backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', borderWidth: 2, borderColor: '#eee' },
+  optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 15, marginBottom: 40 },
+  optionCard: { width: '45%', backgroundColor: '#fff', borderRadius: 12, padding: 24, alignItems: 'center', borderWidth: 2, borderColor: '#eee' },
   optionCardSelected: { borderColor: '#1a1a1a', backgroundColor: '#1a1a1a' },
   optionLabel: { fontFamily: 'Space Mono', fontSize: 14, color: '#1a1a1a' },
   optionLabelSelected: { color: '#fff' },
   
-  orientationList: { gap: 10, marginBottom: 30 },
-  orientationCard: { backgroundColor: '#fff', borderRadius: 12, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 2, borderColor: '#eee' },
+  orientationList: { gap: 12, marginBottom: 40 },
+  orientationCard: { backgroundColor: '#fff', borderRadius: 12, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 2, borderColor: '#eee' },
   orientationCardSelected: { borderColor: '#1a1a1a' },
   orientationInfo: { flex: 1 },
-  orientationLabel: { fontFamily: 'Space Mono', fontSize: 13, color: '#1a1a1a', marginBottom: 2 },
+  orientationLabel: { fontFamily: 'Space Mono', fontSize: 14, color: '#1a1a1a', marginBottom: 2 },
   orientationLabelSelected: { fontWeight: 'bold' },
-  orientationDesc: { fontFamily: 'Space Mono', fontSize: 10, color: '#666' },
+  orientationDesc: { fontFamily: 'Space Mono', fontSize: 11, color: '#666' },
   checkmark: { fontSize: 18, color: '#1a1a1a', fontWeight: 'bold' },
 })
