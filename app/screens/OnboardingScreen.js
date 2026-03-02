@@ -89,28 +89,6 @@ export default function OnboardingScreen({ onComplete }) {
           ))}
         </Animated.ScrollView>
 
-        <View style={styles.dotsContainer}>
-          {onboardingSlides.map((_, index) => {
-            const inputRange = [(index - 1) * width, index * width, (index + 1) * width]
-            const scale = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.8, 1.2, 0.8],
-              extrapolate: 'clamp',
-            })
-            const opacity = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.4, 1, 0.4],
-              extrapolate: 'clamp',
-            })
-            return (
-              <Animated.View 
-                key={index} 
-                style={[styles.dot, { transform: [{ scale }], opacity }]} 
-              />
-            )
-          })}
-        </View>
-
         <View style={styles.footer}>
           <TouchableOpacity 
             style={styles.primaryBtn}
@@ -292,8 +270,6 @@ const styles = StyleSheet.create({
   slide: { width, paddingHorizontal: 40, justifyContent: 'center', paddingVertical: 60 },
   slideText: { fontFamily: 'Cormorant Garamond', fontSize: 32, textAlign: 'center', color: '#1a1a1a', fontStyle: 'italic', lineHeight: 44 },
   slideSubtext: { fontFamily: 'Space Mono', fontSize: 14, color: '#666', textAlign: 'center', marginTop: 20 },
-  dotsContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 30 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1a1a1a', marginHorizontal: 4 },
   footer: { paddingHorizontal: 30, paddingBottom: 50 },
   primaryBtn: { backgroundColor: '#1a1a1a', paddingVertical: 18, borderRadius: 12, alignItems: 'center' },
   primaryBtnDisabled: { opacity: 0.4 },
