@@ -6,46 +6,53 @@ const icebreakers = [
   "Coffee or tea?",
   "Ideal weekend?",
   "Last thing that made you laugh?",
-]
-
-const demoMessages = [
-  { id: '1', content: "Hey! I loved your story about the mountains. Very evocative.", sender: 'them', created_at: new Date(Date.now() - 3600000) },
-  { id: '2', content: "Thanks! Your writing has a really gentle quality to it.", sender: 'me', created_at: new Date(Date.now() - 1800000) },
-  { id: '3', content: "I've always been drawn to places with meaning. You?", sender: 'them', created_at: new Date(Date.now() - 900000) },
+  "Dream travel destination?",
+  "Favorite movie?",
 ]
 
 export default function ChatScreen({ userData, onBack }) {
-  const [messages, setMessages] = useState(demoMessages)
+  const [messages, setMessages] = useState([
+    { id: '1', content: "Hey! I loved your story about the mountains. Very evocative.", sender: 'them' },
+    { id: '2', content: "Thanks! Your writing has a really gentle quality to it.", sender: 'me' },
+    { id: '3', content: "I've always been drawn to places with meaning. You?", sender: 'them' },
+  ])
   const [newMessage, setNewMessage] = useState('')
 
   const handleSend = () => {
     if (!newMessage.trim()) return
-    const msg = { id: Date.now().toString(), content: newMessage, sender: 'me', created_at: new Date() }
+    const msg = { id: Date.now().toString(), content: newMessage, sender: 'me' }
     setMessages([...messages, msg])
     setNewMessage('')
+  }
+
+  const handleIcebreaker = (icebreaker) => {
+    const msg = { id: Date.now().toString(), content: icebreaker, sender: 'me' }
+    setMessages([...messages, msg])
   }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack}>
-          <Text style={styles.back}>-</Text>
-        </TouchableOpacity>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>Sarah, 28</Text>
-          <Text style={styles.userStatus}>Ghost mode on - Photos hidden</Text>
+        <TouchableOpacity onPress={onBack}><Text style={styles.back}>-</Text></TouchableOpacity>
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerName}>Sarah, 28</Text>
+          <Text style={styles.headerStatus}>Ghost mode on - Photos hidden</Text>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.reveal}>REVEAL</Text>
-        </TouchableOpacity>
+        <TouchableOpacity><Text style={styles.reveal}>REVEAL</Text></TouchableOpacity>
       </View>
 
       <View style={styles.icebreakers}>
-        {icebreakers.map((ice, i) => (
-          <TouchableOpacity key={i} style={styles.icebreaker}>
-            <Text style={styles.icebreakerText}>{ice}</Text>
-          </TouchableOpacity>
-        ))}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={icebreakers}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.icebreakerChip} onPress={() => handleIcebreaker(item)}>
+              <Text style={styles.icebreakerText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
       </View>
 
       <FlatList
@@ -68,8 +75,8 @@ export default function ChatScreen({ userData, onBack }) {
           multiline
           placeholderTextColor="#999"
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={styles.sendText}>+</Text>
+        <TouchableOpacity style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]} onPress={handleSend} disabled={!newMessage.trim()}>
+          <Text style={styles.sendText}>SEND</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -79,22 +86,23 @@ export default function ChatScreen({ userData, onBack }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#faf9f7' },
   header: { flexDirection: 'row', alignItems: 'center', padding: 20, paddingTop: 50, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  back: { fontSize: 22, marginRight: 12, color: '#1a1a1a' },
-  userInfo: { flex: 1 },
-  userName: { fontSize: 16, fontWeight: '600' },
-  userStatus: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
-  reveal: { fontFamily: 'Space Mono', fontSize: 10, fontWeight: 'bold' },
-  icebreakers: { flexDirection: 'row', gap: 8, padding: 12, backgroundColor: '#fff', overflowX: 'auto' },
-  icebreaker: { backgroundColor: '#f0f0f0', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20 },
-  icebreakerText: { fontFamily: 'Space Mono', fontSize: 10, whiteSpace: 'nowrap' },
+  back: { fontSize: 24, color: '#1a1a1a', marginRight: 12 },
+  headerInfo: { flex: 1 },
+  headerName: { fontSize: 16, fontWeight: '600' },
+  headerStatus: { fontFamily: 'Space Mono', fontSize: 10, color: '#999' },
+  reveal: { fontFamily: 'Space Mono', fontSize: 10, fontWeight: 'bold', color: '#1a1a1a' },
+  icebreakers: { backgroundColor: '#fff', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
+  icebreakerChip: { backgroundColor: '#f0f0f0', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 16, marginHorizontal: 6 },
+  icebreakerText: { fontFamily: 'Space Mono', fontSize: 10, color: '#333' },
   messageList: { padding: 20 },
   message: { maxWidth: '80%', padding: 14, borderRadius: 16, marginBottom: 12 },
   myMessage: { alignSelf: 'flex-end', backgroundColor: '#1a1a1a' },
   theirMessage: { alignSelf: 'flex-start', backgroundColor: '#fff', borderWidth: 1, borderColor: '#eee' },
-  messageText: { fontSize: 16, lineHeight: 22, color: '#1a1a1a' },
+  messageText: { fontSize: 15, lineHeight: 22, color: '#1a1a1a' },
   myMessageText: { color: '#fff' },
   inputContainer: { flexDirection: 'row', padding: 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#eee' },
-  input: { flex: 1, backgroundColor: '#f8f8f8', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, maxHeight: 100 },
-  sendButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#1a1a1a', justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
-  sendText: { color: '#fff', fontSize: 20, fontWeight: '300' },
+  input: { flex: 1, backgroundColor: '#f8f8f8', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14, maxHeight: 100 },
+  sendButton: { backgroundColor: '#1a1a1a', borderRadius: 20, paddingHorizontal: 16, justifyContent: 'center', marginLeft: 8 },
+  sendButtonDisabled: { opacity: 0.4 },
+  sendText: { fontFamily: 'Space Mono', fontSize: 10, fontWeight: 'bold', color: '#fff' },
 })
