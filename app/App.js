@@ -111,9 +111,9 @@ export default function App() {
     case 'quiz':
       return <QuizScreen userData={userData} onComplete={handleQuizComplete} onBack={() => setCurrentScreen('profile')} />
     case 'discover':
-      return <DiscoverScreen userData={userData} onMatch={handleMatch} onOpenSettings={() => setCurrentScreen('settings')} />
+      return <DiscoverScreen userData={userData} onMatch={handleMatch} onOpenSettings={() => setCurrentScreen('settings')} onOpenChats={() => setCurrentScreen('chats')} />
     case 'chats':
-      return <ChatsListScreen userData={userData} onOpenChat={handleOpenChat} onOpenDiscover={() => setCurrentScreen('discover')} onOpenSettings={() => setCurrentScreen('settings')} />
+      return <ChatsListScreen userData={userData} onOpenChat={handleOpenChat} onOpenDiscover={() => setCurrentScreen('discover')} onOpenSettings={() => setCurrentScreen('settings')} onOpenChats={() => setCurrentScreen('chats')} />
     case 'match':
       return <MatchScreen matchData={matchedProfile} onSendMessage={handleSendMessage} onKeepSwiping={handleKeepSwiping} />
     case 'chat':

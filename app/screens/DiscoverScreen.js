@@ -7,7 +7,7 @@ const demoProfiles = [
   { id: '3', name: 'Elena', age: 26, bio: "Music lover. Believer in meaningful conversations.", writingStyle: 'casual', interests: ['music', 'cats', 'reading'] }
 ]
 
-export default function DiscoverScreen({ userData, onMatch, onOpenSettings }) {
+export default function DiscoverScreen({ userData, onMatch, onOpenSettings, onOpenChats }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const currentProfile = demoProfiles[currentIndex]
 
@@ -64,8 +64,14 @@ export default function DiscoverScreen({ userData, onMatch, onOpenSettings }) {
           <View style={styles.navIconActive}><Text style={styles.navIconTextActive}>V</Text></View>
           <Text style={styles.navLabelActive}>Discover</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}><View style={styles.navIcon}><Text style={styles.navIconText}>C</Text></View><Text style={styles.navLabel}>Chats</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}><View style={styles.navIcon}><View style={styles.settingsIcon}><View style={styles.settingsCircle} /></View></View><Text style={styles.navLabel}>Settings</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={onOpenChats}>
+          <View style={styles.navIcon}><Text style={styles.navIconText}>C</Text></View>
+          <Text style={styles.navLabel}>Chats</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem} onPress={onOpenSettings}>
+          <View style={styles.navIcon}><View style={styles.settingsIcon}><View style={styles.settingsCircle} /></View></View>
+          <Text style={styles.navLabel}>Settings</Text>
+        </TouchableOpacity>
       </View>
     </View>
   )
