@@ -7,6 +7,9 @@ import ProfileScreen from './screens/ProfileScreen'
 import QuizScreen from './screens/QuizScreen'
 import DiscoverScreen from './screens/DiscoverScreen'
 import ChatsListScreen from './screens/ChatsListScreen'
+import ThoughtsScreen from './screens/ThoughtsScreen'
+import DailyPromptScreen from './screens/DailyPromptScreen'
+import VibeQuizScreen from './screens/VibeQuizScreen'
 import MatchScreen from './screens/MatchScreen'
 import ChatScreen from './screens/ChatScreen'
 import SettingsScreen from './screens/SettingsScreen'
@@ -94,7 +97,21 @@ export default function App() {
   const handleSignOut = async () => {
     await clearUserProfile()
     setUserData(null)
+    setMatchedProfile(null)
+    setActiveChat(null)
     setCurrentScreen('onboarding')
+  }
+
+  const handleEditProfile = () => {
+    setCurrentScreen('profile')
+  }
+
+  const handleVibeComplete = () => {
+    setCurrentScreen('discover')
+  }
+
+  const goToDiscover = () => {
+    setCurrentScreen('discover')
   }
 
   if (loading) {
@@ -107,19 +124,52 @@ export default function App() {
     case 'onboarding':
       return <OnboardingScreen onComplete={handleOnboardingComplete} />
     case 'profile':
-      return <ProfileScreen userData={userData} onComplete={handleProfileComplete} onBack={() => setCurrentScreen('onboarding')} />
+      return <ProfileScreen userData={userData} onComplete={handleProfileComplete} onBack={goToDiscover} isEditing={true} />
     case 'quiz':
       return <QuizScreen userData={userData} onComplete={handleQuizComplete} onBack={() => setCurrentScreen('profile')} />
     case 'discover':
-      return <DiscoverScreen userData={userData} onMatch={handleMatch} onOpenSettings={() => setCurrentScreen('settings')} onOpenChats={() => setCurrentScreen('chats')} />
+      return <DiscoverScreen 
+        userData={userData} 
+        onMatch={handleMatch} 
+        onOpenSettings={() => setCurrentScreen('settings')} 
+        onOpenChats={() => setCurrentScreen('chats')} 
+        onOpenThoughts={() => setCurrentScreen('thoughts')} 
+        onOpenVibeQuiz={() => setCurrentScreen('vibequiz')}
+        onOpenDailyPrompt={() => setCurrentScreen('dailyprompt')}
+      />
     case 'chats':
-      return <ChatsListScreen userData={userData} onOpenChat={handleOpenChat} onOpenDiscover={() => setCurrentScreen('discover')} onOpenSettings={() => setCurrentScreen('settings')} onOpenChats={() => setCurrentScreen('chats')} />
+      return <ChatsListScreen 
+        userData={userData} 
+        onOpenChat={handleOpenChat} 
+        onOpenDiscover={goToDiscover} 
+        onOpenSettings={() => setCurrentScreen('settings')} 
+        onOpenThoughts={() => setCurrentScreen('thoughts')} 
+      />
+    case 'thoughts':
+      return <ThoughtsScreen 
+        userData={userData} 
+        onBack={goToDiscover} 
+        onOpenDiscover={goToDiscover} 
+        onOpenSettings={() => setCurrentScreen('settings')} 
+      />
+    case 'dailyprompt':
+      return <DailyPromptScreen onBack={goToDiscover} onClose={goToDiscover} />
+    case 'vibequiz':
+      return <VibeQuizScreen onComplete={handleVibeComplete} onBack={goToDiscover} />
     case 'match':
       return <MatchScreen matchData={matchedProfile} onSendMessage={handleSendMessage} onKeepSwiping={handleKeepSwiping} />
     case 'chat':
-      return <ChatScreen userData={userData} onBack={() => setCurrentScreen('chats')} />
+      return <ChatScreen userData={userData} chatData={activeChat} onBack={() => setCurrentScreen('chats')} />
     case 'settings':
-      return <SettingsScreen userData={userData} settings={settings} onSettingsChange={handleSettingsChange} onBack={() => setCurrentScreen('discover')} onSignOut={handleSignOut} />
+      return <SettingsScreen 
+        userData={userData} 
+        settings={settings} 
+        onSettingsChange={handleSettingsChange} 
+        onBack={goToDiscover} 
+        onSignOut={handleSignOut} 
+        onEditProfile={handleEditProfile} 
+        onOpenThoughts={() => setCurrentScreen('thoughts')} 
+      />
     default:
       return <SplashScreen onFinish={() => setCurrentScreen('onboarding')} />
   }

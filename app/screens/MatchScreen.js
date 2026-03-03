@@ -1,69 +1,76 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native'
 
 export default function MatchScreen({ matchData, onSendMessage, onKeepSwiping }) {
-  const [message, setMessage] = useState('')
+  const [scaleAnim] = useState(new Animated.Value(0))
 
-  const sharedInterests = matchData?.sharedInterests || ['books', 'coffee']
-  const compatibilityScore = matchData?.compatibility || 85
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      tension: 50,
+      friction: 7,
+      useNativeDriver: true,
+    }).start()
+  }, [])
 
-  const handleSend = () => {
-    const msg = message.trim() || getDefaultMessage()
-    onSendMessage(msg)
-  }
-
-  const getDefaultMessage = () => {
-    const messages = [
-      `Hey ${matchData?.name}, loved your story!`,
-      `Hi ${matchData?.name}! Your answers are so interesting.`,
-      `Hey ${matchData?.name}, we seem to have a lot in common!`,
-    ]
-    return messages[Math.floor(Math.random() * messages.length)]
-  }
+  const commonInterests = matchData?.sharedInterests || []
+  const compatibility = matchData?.compatibility || 85
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.itsAMatch}>It's a Match</Text>
-        <Text style={styles.subtitle}>You and {matchData?.name} liked each other</Text>
-      </View>
+      <View style={styles.content}>
+        <Animated.View style={[styles.matchBadge, { transform: [{ scale: scaleAnim }] }]}>
+          <Text style={styles.matchText}>IT'S A MATCH</Text>
+        </Animated.View>
 
-      <View style={styles.compatibilitySection}>
-        <View style={styles.scoreCircle}>
-          <Text style={styles.scoreText}>{compatibilityScore}%</Text>
-        </View>
-        <Text style={styles.scoreLabel}>Compatibility</Text>
-      </View>
+        <Text style={styles.title}>You and {matchData?.name || 'someone'}</Text>
+        <Text style={styles.subtitle}>both want to get to know each other</Text>
 
-      {sharedInterests.length > 0 && (
-        <View style={styles.interestsSection}>
-          <Text style={styles.interestsLabel}>SHARED INTERESTS</Text>
-          <View style={styles.interestTags}>
-            {sharedInterests.map((interest, i) => (
-              <View key={i} style={styles.interestTag}>
-                <Text style={styles.interestText}>{interest}</Text>
-              </View>
-            ))}
+        <View style={styles.statsRow}>
+          <View style={styles.stat}>
+            <Text style={styles.statValue}>{compatibility}%</Text>
+            <Text style={styles.statLabel}>COMPATIBILITY</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.stat}>
+            <Text style={styles.statValue}>{commonInterests.length}</Text>
+            <Text style={styles.statLabel}>SHARED INTERESTS</Text>
           </View>
         </View>
-      )}
 
-      <View style={styles.messageSection}>
-        <Text style={styles.messageLabel}>SEND A MESSAGE</Text>
-        <View style={styles.messageBox}>
-          <Text style={styles.messageInput} onPress={() => setMessage(getDefaultMessage())}>
-            {message || getDefaultMessage()}
-          </Text>
+        {commonInterests.length > 0 && (
+          <View style={styles.interests}>
+            <Text style={styles.interestsLabel}>You both like</Text>
+            <View style={styles.interestTags}>
+              {commonInterests.map((interest, i) => (
+                <View key={i} style={styles.interestTag}>
+                  <Text style={styles.interestText}>{interest}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.quickReplies}>
+          <Text style={styles.quickLabel}>Send a quick message</Text>
+          {[
+            "Hey! Nice to match with you",
+            "Hi! Your profile sounds interesting",
+            "Hey there! Let's chat"
+          ].map((msg, i) => (
+            <TouchableOpacity key={i} style={styles.quickButton} onPress={onSendMessage}>
+              <Text style={styles.quickText}>{msg}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={styles.sendButtonText}>SEND</Text>
+        <TouchableOpacity style={styles.keepSwiping} onPress={onKeepSwiping}>
+          <Text style={styles.keepSwipingText}>Keep Swiping</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.skipButton} onPress={onKeepSwiping}>
-          <Text style={styles.skipButtonText}>Keep Swiping</Text>
+        <TouchableOpacity style={styles.sendMessage} onPress={onSendMessage}>
+          <Text style={styles.sendMessageText}>Send Message</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -71,129 +78,29 @@ export default function MatchScreen({ matchData, onSendMessage, onKeepSwiping })
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#faf9f7',
-    padding: 24,
-    paddingTop: 60,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  itsAMatch: {
-    fontFamily: 'Space Mono',
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    letterSpacing: 2,
-  },
-  subtitle: {
-    fontFamily: 'Cormorant Garamond',
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: '#666',
-    marginTop: 8,
-  },
-  compatibilitySection: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  scoreCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#1a1a1a',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scoreText: {
-    fontFamily: 'Space Mono',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  scoreLabel: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#999',
-    marginTop: 8,
-    letterSpacing: 1,
-  },
-  interestsSection: {
-    marginBottom: 30,
-  },
-  interestsLabel: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#999',
-    letterSpacing: 1,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  interestTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  interestTag: {
-    backgroundColor: '#1a1a1a',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 16,
-  },
-  interestText: {
-    fontFamily: 'Space Mono',
-    fontSize: 11,
-    color: '#fff',
-  },
-  messageSection: {
-    marginBottom: 30,
-  },
-  messageLabel: {
-    fontFamily: 'Space Mono',
-    fontSize: 10,
-    color: '#999',
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  messageBox: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  messageInput: {
-    fontFamily: 'Cormorant Garamond',
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: '#333',
-  },
-  actions: {
-    gap: 12,
-  },
-  sendButton: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-  },
-  sendButtonText: {
-    fontFamily: 'Space Mono',
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 2,
-  },
-  skipButton: {
-    padding: 16,
-    alignItems: 'center',
-  },
-  skipButtonText: {
-    fontFamily: 'Space Mono',
-    fontSize: 11,
-    color: '#999',
-  },
+  container: { flex: 1, backgroundColor: '#faf9f7' },
+  content: { flex: 1, padding: 24, paddingTop: 60, alignItems: 'center' },
+  matchBadge: { backgroundColor: '#1a1a1a', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 30, marginBottom: 24 },
+  matchText: { fontFamily: 'Space Mono', fontSize: 14, fontWeight: 'bold', color: '#fff', letterSpacing: 2 },
+  title: { fontFamily: 'Cormorant Garamond', fontSize: 32, fontStyle: 'italic', color: '#1a1a1a', marginBottom: 8 },
+  subtitle: { fontFamily: 'Space Mono', fontSize: 12, color: '#666', marginBottom: 30 },
+  statsRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 30 },
+  stat: { alignItems: 'center', paddingHorizontal: 30 },
+  statValue: { fontFamily: 'Space Mono', fontSize: 28, fontWeight: 'bold', color: '#1a1a1a' },
+  statLabel: { fontFamily: 'Space Mono', fontSize: 9, color: '#999', marginTop: 4, letterSpacing: 1 },
+  divider: { width: 1, height: 40, backgroundColor: '#ddd' },
+  interests: { alignItems: 'center', marginBottom: 30 },
+  interestsLabel: { fontFamily: 'Space Mono', fontSize: 10, color: '#999', marginBottom: 12 },
+  interestTags: { flexDirection: 'row', gap: 8 },
+  interestTag: { backgroundColor: '#1a1a1a', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
+  interestText: { fontFamily: 'Space Mono', fontSize: 11, color: '#fff' },
+  quickReplies: { width: '100%' },
+  quickLabel: { fontFamily: 'Space Mono', fontSize: 10, color: '#999', marginBottom: 12, textAlign: 'center' },
+  quickButton: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#eee' },
+  quickText: { fontFamily: 'Cormorant Garamond', fontSize: 15, fontStyle: 'italic', color: '#333', textAlign: 'center' },
+  actions: { padding: 24, paddingBottom: 40, gap: 12 },
+  keepSwiping: { backgroundColor: '#fff', borderRadius: 12, padding: 18, alignItems: 'center', borderWidth: 1, borderColor: '#ddd' },
+  keepSwipingText: { fontFamily: 'Space Mono', fontSize: 12, color: '#666', letterSpacing: 1 },
+  sendMessage: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 18, alignItems: 'center' },
+  sendMessageText: { fontFamily: 'Space Mono', fontSize: 12, fontWeight: 'bold', color: '#fff', letterSpacing: 1 },
 })

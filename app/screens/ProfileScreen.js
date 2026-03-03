@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 
 const writingPrompts = [
@@ -13,12 +13,18 @@ const presetInterests = [
   'Coffee', 'Wine', 'Pets', 'Fashion', 'Science', 'History'
 ]
 
-export default function ProfileScreen({ userData, onComplete, onBack }) {
+export default function ProfileScreen({ userData, onComplete, onBack, isEditing }) {
   const [screen, setScreen] = useState('bio')
-  const [bio, setBio] = useState('')
-  const [selectedInterests, setSelectedInterests] = useState([])
-  const [promptAnswers, setPromptAnswers] = useState({})
+  const [bio, setBio] = useState(userData?.bio || '')
+  const [selectedInterests, setSelectedInterests] = useState(userData?.interests || [])
+  const [promptAnswers, setPromptAnswers] = useState(userData?.promptAnswers || {})
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
+
+  useEffect(() => {
+    if (userData?.bio) setBio(userData.bio)
+    if (userData?.interests) setSelectedInterests(userData.interests)
+    if (userData?.promptAnswers) setPromptAnswers(userData.promptAnswers)
+  }, [userData])
 
   const toggleInterest = (interest) => {
     if (selectedInterests.includes(interest)) {
@@ -36,7 +42,6 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
   }
 
   const handleBioComplete = () => {
-    if (!bio.trim()) return
     setScreen('interests')
   }
 
@@ -56,7 +61,6 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
   }
 
   const handleSkipAll = () => {
-    // Skip all prompts - go directly to finish
     const writingStyle = analyzeWritingStyle(bio)
     const profileData = { bio, interests: selectedInterests, writingStyle, promptAnswers: {} }
     onComplete(profileData)
@@ -74,7 +78,6 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
     else if (onBack) onBack()
   }
 
-  // Prompts Screen
   if (screen === 'prompts') {
     const currentPrompt = writingPrompts[currentPromptIndex]
     const currentAnswer = promptAnswers[currentPromptIndex] || ''
@@ -123,7 +126,6 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
     )
   }
 
-  // Interests Screen
   if (screen === 'interests') {
     return (
       <View style={styles.container}>
@@ -149,7 +151,6 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
     )
   }
 
-  // Bio Screen
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -162,7 +163,7 @@ export default function ProfileScreen({ userData, onComplete, onBack }) {
         <View style={styles.inputGroup}>
           <TextInput style={[styles.input, styles.bioInput]} placeholder="Write something about yourself..." placeholderTextColor="#bbb" value={bio} onChangeText={setBio} multiline numberOfLines={6} textAlignVertical="top" />
         </View>
-        <TouchableOpacity style={[styles.button, !bio.trim() && styles.buttonDisabled]} onPress={handleBioComplete} disabled={!bio.trim()}>
+        <TouchableOpacity style={[styles.button, !bio.trim() && styles.buttonDisabled]} onPress={handleBioComplete} disabled={!bio.trim() && !isEditing}>
           <Text style={styles.buttonText}>CONTINUE</Text>
         </TouchableOpacity>
       </ScrollView>
