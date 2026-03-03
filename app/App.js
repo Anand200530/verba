@@ -6,6 +6,7 @@ import OnboardingScreen from './screens/OnboardingScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import QuizScreen from './screens/QuizScreen'
 import DiscoverScreen from './screens/DiscoverScreen'
+import ChatsListScreen from './screens/ChatsListScreen'
 import MatchScreen from './screens/MatchScreen'
 import ChatScreen from './screens/ChatScreen'
 import SettingsScreen from './screens/SettingsScreen'
@@ -18,6 +19,7 @@ export default function App() {
   const [userData, setUserData] = useState(null)
   const [settings, setSettings] = useState({ ghostMode: true })
   const [matchedProfile, setMatchedProfile] = useState(null)
+  const [activeChat, setActiveChat] = useState(null)
 
   useEffect(() => {
     checkExistingUser()
@@ -42,34 +44,26 @@ export default function App() {
     setLoading(false)
   }
 
-  const handleOnboardingComplete = async (onboardingData) => {
-    const fullData = { name: onboardingData.name, age: onboardingData.age, gender: onboardingData.gender, orientation: onboardingData.orientation, bio: '', interests: [], quizData: {} }
+  const handleOnboardingComplete = async (data) => {
+    const fullData = { name: data.name, age: data.age, gender: data.gender, orientation: data.orientation, bio: '', interests: [], quizData: {} }
     await saveUserProfile(fullData)
     setUserData(fullData)
     setCurrentScreen('profile')
   }
 
-  const handleProfileComplete = async (profileData) => {
-    const fullData = { ...userData, ...profileData }
+  const handleProfileComplete = async (data) => {
+    const fullData = { ...userData, ...data }
     await saveUserProfile(fullData)
     setUserData(fullData)
     setCurrentScreen('quiz')
   }
 
-  const handleProfileBack = () => {
-    setCurrentScreen('onboarding')
-  }
-
-  const handleQuizComplete = async (quizData) => {
-    const fullData = { ...userData, quizData }
+  const handleQuizComplete = async (data) => {
+    const fullData = { ...userData, quizData: data }
     await saveUserProfile(fullData)
-    await saveQuizData(quizData)
+    await saveQuizData(data)
     setUserData(fullData)
     setCurrentScreen('discover')
-  }
-
-  const handleQuizBack = () => {
-    setCurrentScreen('profile')
   }
 
   const handleMatch = (profile) => {
@@ -79,12 +73,17 @@ export default function App() {
   }
 
   const handleSendMessage = () => {
-    setCurrentScreen('chat')
+    setCurrentScreen('chats')
   }
 
   const handleKeepSwiping = () => {
     setMatchedProfile(null)
     setCurrentScreen('discover')
+  }
+
+  const handleOpenChat = (chat) => {
+    setActiveChat(chat)
+    setCurrentScreen('chat')
   }
 
   const handleSettingsChange = async (newSettings) => {
@@ -108,15 +107,17 @@ export default function App() {
     case 'onboarding':
       return <OnboardingScreen onComplete={handleOnboardingComplete} />
     case 'profile':
-      return <ProfileScreen userData={userData} onComplete={handleProfileComplete} onBack={handleProfileBack} />
+      return <ProfileScreen userData={userData} onComplete={handleProfileComplete} onBack={() => setCurrentScreen('onboarding')} />
     case 'quiz':
-      return <QuizScreen userData={userData} onComplete={handleQuizComplete} onBack={handleQuizBack} />
+      return <QuizScreen userData={userData} onComplete={handleQuizComplete} onBack={() => setCurrentScreen('profile')} />
     case 'discover':
       return <DiscoverScreen userData={userData} onMatch={handleMatch} onOpenSettings={() => setCurrentScreen('settings')} />
+    case 'chats':
+      return <ChatsListScreen userData={userData} onOpenChat={handleOpenChat} onOpenDiscover={() => setCurrentScreen('discover')} onOpenSettings={() => setCurrentScreen('settings')} />
     case 'match':
       return <MatchScreen matchData={matchedProfile} onSendMessage={handleSendMessage} onKeepSwiping={handleKeepSwiping} />
     case 'chat':
-      return <ChatScreen userData={userData} onBack={() => setCurrentScreen('discover')} />
+      return <ChatScreen userData={userData} onBack={() => setCurrentScreen('chats')} />
     case 'settings':
       return <SettingsScreen userData={userData} settings={settings} onSettingsChange={handleSettingsChange} onBack={() => setCurrentScreen('discover')} onSignOut={handleSignOut} />
     default:
